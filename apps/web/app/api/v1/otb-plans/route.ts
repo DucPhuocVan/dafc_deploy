@@ -251,7 +251,7 @@ export async function POST(request: NextRequest) {
             versionName: name || `OTB Plan v${existingPlans + 1}`,
             versionType: versionType || 'V0_SYSTEM',
             version: existingPlans + 1,
-            totalOTBValue: new Prisma.Decimal(0),
+            totalOTBValue: 0,
             totalSKUCount: 0,
             status: 'DRAFT',
             createdById: session.user.id,

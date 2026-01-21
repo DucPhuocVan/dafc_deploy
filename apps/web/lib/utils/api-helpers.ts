@@ -194,12 +194,13 @@ export function withErrorHandling<T>(
 }
 
 /**
- * Create Prisma Decimal safely
+ * Convert value to number safely (Prisma handles Decimal conversion automatically)
  */
-export function toDecimal(value: number | string | null | undefined): Prisma.Decimal | null {
+export function toDecimal(value: number | string | null | undefined): number | null {
   if (value === null || value === undefined) return null;
   try {
-    return new Prisma.Decimal(value);
+    const num = typeof value === 'string' ? parseFloat(value) : value;
+    return isNaN(num) ? null : num;
   } catch {
     return null;
   }

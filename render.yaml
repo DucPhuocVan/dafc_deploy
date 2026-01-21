@@ -17,14 +17,11 @@ services:
       - key: NODE_ENV
         value: production
       - key: NEXT_PUBLIC_API_URL
-        fromService:
-          type: web
-          name: dafc-otb-api
-          property: url
+        sync: false  # Set manually: https://dafc-otb-api.onrender.com
       - key: NEXTAUTH_URL
-        sync: false  # Set in Render dashboard
+        sync: false  # Set manually: https://dafc-otb-web.onrender.com
       - key: AUTH_SECRET
-        sync: false  # Set in Render dashboard
+        generateValue: true
       - key: OPENAI_API_KEY
         sync: false  # Set in Render dashboard
 
@@ -49,19 +46,16 @@ services:
           name: dafc-otb-db
           property: connectionString
       - key: JWT_SECRET
-        sync: false  # Set in Render dashboard
+        generateValue: true
       - key: JWT_EXPIRES_IN
         value: 7d
       - key: CORS_ORIGIN
-        fromService:
-          type: web
-          name: dafc-otb-web
-          property: url
+        sync: false  # Set manually: https://dafc-otb-web.onrender.com
 
+databases:
   # ============================================
   # PostgreSQL Database
   # ============================================
-databases:
   - name: dafc-otb-db
     databaseName: dafc_otb
     region: singapore

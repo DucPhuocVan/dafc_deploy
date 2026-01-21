@@ -9,8 +9,8 @@ services:
     runtime: node
     region: singapore
     plan: starter
-    buildCommand: pnpm install && pnpm build --filter=@dafc/web
-    startCommand: pnpm --filter=@dafc/web start
+    buildCommand: npm install -g pnpm && NODE_ENV=development pnpm install --frozen-lockfile && pnpm run build --filter=@dafc/web
+    startCommand: pnpm run start --filter=@dafc/web
     healthCheckPath: /
     envVars:
       - key: NODE_ENV
@@ -32,8 +32,8 @@ services:
     runtime: node
     region: singapore
     plan: starter
-    buildCommand: pnpm install && pnpm build --filter=@dafc/api
-    startCommand: pnpm --filter=@dafc/api start:prod
+    buildCommand: npm install -g pnpm && NODE_ENV=development pnpm install --frozen-lockfile && pnpm run build --filter=@dafc/api
+    startCommand: pnpm run start:prod --filter=@dafc/api
     healthCheckPath: /api/v1/health/ping
     envVars:
       - key: NODE_ENV

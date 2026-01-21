@@ -89,17 +89,17 @@ export async function GET(request: NextRequest) {
     ]);
 
     // Calculate metrics
-    const totalBudget = budgets.reduce((sum, b) => sum + Number(b.totalBudget || 0), 0);
+    const totalBudget = budgets.reduce((sum: number, b: { totalBudget: unknown }) => sum + Number(b.totalBudget || 0), 0);
     // Calculate utilized from OTB plans or simulate based on approved budgets
-    const approvedBudgets = budgets.filter(b => b.status === 'APPROVED');
-    const utilizedBudget = approvedBudgets.reduce((sum, b) => sum + Number(b.totalBudget || 0), 0) * 0.7; // Simulated 70% utilization for approved
+    const approvedBudgets = budgets.filter((b: { status: string }) => b.status === 'APPROVED');
+    const utilizedBudget = approvedBudgets.reduce((sum: number, b: { totalBudget: unknown }) => sum + Number(b.totalBudget || 0), 0) * 0.7; // Simulated 70% utilization for approved
     const utilizationRate = totalBudget > 0 ? (utilizedBudget / totalBudget) * 100 : 0;
 
-    const pendingApprovals = otbPlans.filter(p => p.status === 'SUBMITTED').length;
-    const activePlans = otbPlans.filter(p => ['DRAFT', 'SUBMITTED', 'UNDER_REVIEW'].includes(p.status)).length;
-    const completedPlans = otbPlans.filter(p => p.status === 'APPROVED').length;
+    const pendingApprovals = otbPlans.filter((p: { status: string }) => p.status === 'SUBMITTED').length;
+    const activePlans = otbPlans.filter((p: { status: string }) => ['DRAFT', 'SUBMITTED', 'UNDER_REVIEW'].includes(p.status)).length;
+    const completedPlans = otbPlans.filter((p: { status: string }) => p.status === 'APPROVED').length;
 
-    const criticalAlerts = alerts.filter(a => a.severity === 'CRITICAL').length;
+    const criticalAlerts = alerts.filter((a: { severity: string }) => a.severity === 'CRITICAL').length;
 
     // Generate highlights
     const highlights = generateHighlights(budgets, otbPlans, skuProposals, alerts);

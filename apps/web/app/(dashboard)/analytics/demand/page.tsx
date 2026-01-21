@@ -46,8 +46,16 @@ import {
 import { cn } from '@/lib/utils';
 
 // Demo data generators
+interface DemandTrendData {
+  month: string;
+  actual: number | null;
+  forecast: number;
+  lowerBound: number;
+  upperBound: number;
+}
+
 function generateDemandTrends(months: number = 12) {
-  const data = [];
+  const data: DemandTrendData[] = [];
   const baseValue = 1500;
 
   for (let i = 0; i < months; i++) {

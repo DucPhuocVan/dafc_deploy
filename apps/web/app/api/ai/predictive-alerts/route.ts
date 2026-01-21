@@ -186,9 +186,23 @@ function mapAlertType(type: string): PredictiveAlertTypeValue {
 }
 
 // Generate predictive alerts based on analysis
+interface PredictiveAlert {
+  id: string;
+  type: string;
+  severity: string;
+  title: string;
+  description: string;
+  prediction: string;
+  probability: number;
+  timeframe: string;
+  impact: Record<string, unknown>;
+  recommendedActions: string[];
+  createdAt: string;
+}
+
 function generatePredictiveAlerts() {
   const now = new Date();
-  const alerts = [];
+  const alerts: PredictiveAlert[] = [];
 
   // Stockout prediction
   if (Math.random() > 0.3) {

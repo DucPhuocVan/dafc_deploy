@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
       // Enrich workflows with entity details
       enrichedWorkflows = await Promise.all(
         workflows.map(async (workflow) => {
-          let entityDetails = null;
+          let entityDetails: unknown = null;
 
           if (workflow.referenceType === 'BUDGET') {
             entityDetails = await prisma.budgetAllocation.findUnique({

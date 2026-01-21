@@ -32,8 +32,13 @@ import {
 } from 'lucide-react';
 
 // Generate demo data
+interface HistoricalDataPoint {
+  date: string;
+  actual: number;
+}
+
 function generateHistoricalData(months: number = 12) {
-  const data = [];
+  const data: HistoricalDataPoint[] = [];
   let baseValue = 85000;
 
   for (let i = 0; i < months; i++) {
@@ -56,10 +61,17 @@ function generateHistoricalData(months: number = 12) {
   return data;
 }
 
+interface ForecastDataPoint {
+  date: string;
+  forecast: number;
+  lowerBound: number;
+  upperBound: number;
+}
+
 function generateForecastData(historical: { date: string; actual: number }[], periods: number = 6) {
   const lastActual = historical[historical.length - 1].actual;
   const avgGrowth = 0.025; // 2.5% growth
-  const forecast = [];
+  const forecast: ForecastDataPoint[] = [];
 
   for (let i = 0; i < periods; i++) {
     const date = new Date();

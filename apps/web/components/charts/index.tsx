@@ -486,3 +486,12 @@ export { GaugeChart } from './gauge-chart';
 export { WaterfallChart } from './waterfall-chart';
 export { RadarChart } from './radar-chart';
 export { ForecastChart } from './forecast-chart';
+
+// Export Industrial Precision Charts
+export { AreaChart } from './area-chart';
+export { BarChart, VarianceBarChart } from './bar-chart';
+export { LineChart, TrendLineChart, ForecastLineChart } from './line-chart';
+export { TrendChart } from './trend-chart';
+
+// Re-export chart theme utilities
+export { chartTheme, rechartsConfig, chartFormatters, getSeriesColor, getStatusColor } from '@/lib/chart-theme';

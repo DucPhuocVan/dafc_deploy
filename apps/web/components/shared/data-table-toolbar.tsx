@@ -20,16 +20,20 @@ export function DataTableToolbar<TData>({
   const t = useTranslations('common');
   const placeholder = searchPlaceholder || `${t('search')}...`;
   const isFiltered = table.getState().columnFilters.length > 0;
+  const column = table.getColumn(searchKey);
+
+  // Don't render search if column doesn't exist
+  if (!column) {
+    return null;
+  }
 
   return (
     <div className="flex items-center justify-between">
       <div className="flex flex-1 items-center space-x-2">
         <Input
           placeholder={placeholder}
-          value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ''}
-          onChange={(event) =>
-            table.getColumn(searchKey)?.setFilterValue(event.target.value)
-          }
+          value={(column.getFilterValue() as string) ?? ''}
+          onChange={(event) => column.setFilterValue(event.target.value)}
           className="h-9 w-[150px] lg:w-[250px]"
         />
         {isFiltered && (

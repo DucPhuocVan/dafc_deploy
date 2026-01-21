@@ -140,27 +140,27 @@ export function AIChatWidget({
 
   return (
     <TooltipProvider>
-      {/* Chat Button */}
+      {/* Chat Button - Higher on mobile to avoid bottom nav overlap */}
       <AnimatePresence>
         {!isOpen && (
           <motion.div
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
-            className="fixed bottom-6 right-6 z-50"
+            className="fixed bottom-24 md:bottom-6 right-4 md:right-6 z-50"
           >
             <Button
               onClick={() => setIsOpen(true)}
-              className="h-10 w-10 rounded-full shadow-lg"
+              className="h-12 w-12 md:h-10 md:w-10 rounded-full shadow-lg bg-dafc-gold hover:bg-dafc-gold-dark text-black"
               size="icon"
             >
-              <MessageSquare className="h-4 w-4" />
+              <MessageSquare className="h-5 w-5 md:h-4 md:w-4" />
             </Button>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Chat Window */}
+      {/* Chat Window - Adjusted for mobile bottom nav */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -168,7 +168,7 @@ export function AIChatWidget({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="fixed bottom-6 right-6 w-96 h-[500px] bg-background border rounded-lg shadow-xl flex flex-col z-50"
+            className="fixed bottom-20 md:bottom-6 right-2 md:right-6 left-2 md:left-auto w-auto md:w-96 h-[60vh] md:h-[500px] bg-background border rounded-lg shadow-xl flex flex-col z-50"
           >
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-3 border-b bg-muted/30">

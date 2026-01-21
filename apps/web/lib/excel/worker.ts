@@ -166,8 +166,10 @@ async function parseExcel(
 
         if (parsed) {
           chunkRows.push(parsed);
-          totalQuantity += parsed.orderQuantity;
-          totalValue += parsed.orderQuantity * parsed.retailPrice;
+          const qty = parsed.orderQuantity as number;
+          const price = parsed.retailPrice as number;
+          totalQuantity += qty;
+          totalValue += qty * price;
         }
 
         chunkErrors.push(...rowErrors);
@@ -211,7 +213,7 @@ async function parseExcel(
       type: 'complete',
       id: jobId,
       data: {
-        success: allErrors.filter((e: Record<string, unknown>) => e.severity === 'error').length === 0,
+        success: allErrors.filter((e) => (e as Record<string, unknown>).severity === 'error').length === 0,
         totalRows: rawData.length,
         parsedRows: allData.length,
         errorRows: rawData.length - allData.length,

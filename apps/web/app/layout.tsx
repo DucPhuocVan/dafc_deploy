@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, Plus_Jakarta_Sans } from 'next/font/google';
+import { Inter, JetBrains_Mono } from 'next/font/google';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/sonner';
 import { NextIntlClientProvider } from 'next-intl';
@@ -10,12 +10,12 @@ import './globals.css';
 
 const inter = Inter({
   subsets: ['latin', 'vietnamese'],
-  variable: '--font-inter',
+  variable: '--font-display',
 });
 
-const plusJakarta = Plus_Jakarta_Sans({
-  subsets: ['latin', 'vietnamese'],
-  variable: '--font-plus-jakarta',
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-data',
 });
 
 export const metadata: Metadata = {
@@ -65,10 +65,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-    { media: '(prefers-color-scheme: dark)', color: '#0a0a0a' },
-  ],
+  themeColor: '#1a1714',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
@@ -102,13 +99,13 @@ export default async function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="mobile-web-app-capable" content="yes" />
       </head>
-      <body className={`${inter.variable} ${plusJakarta.variable} antialiased`}>
+      <body className={`${inter.variable} ${jetbrainsMono.variable} font-display antialiased`}>
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider
             attribute="class"
-            defaultTheme="light"
+            defaultTheme="dark"
             enableSystem
-            disableTransitionOnChange
+            disableTransitionOnChange={false}
           >
             <PWAProvider>
               {children}

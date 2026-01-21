@@ -45,8 +45,13 @@ export class BudgetsController {
   @Patch(':id')
   @Roles('ADMIN', 'FINANCE_HEAD', 'BRAND_MANAGER')
   @ApiOperation({ summary: 'Update budget' })
-  update(@Param('id') id: string, @Body() data: any) {
-    return this.budgetsService.update(id, data);
+  update(
+    @Param('id') id: string,
+    @Body() data: { changeReason?: string; [key: string]: any },
+    @CurrentUser() user: CurrentUserPayload,
+  ) {
+    const { changeReason, ...updateData } = data;
+    return this.budgetsService.update(id, updateData, user.id, changeReason);
   }
 
   @Delete(':id')
@@ -83,5 +88,23 @@ export class BudgetsController {
     @CurrentUser() user: CurrentUserPayload,
   ) {
     return this.budgetsService.reject(id, user.id, data.reason);
+  }
+
+  @Get(':id/change-logs')
+  @ApiOperation({ summary: 'Get budget change history' })
+  getChangeLogs(@Param('id') id: string, @Query() query: any) {
+    return this.budgetsService.getChangeLogs(id, query);
+  }
+
+  @Get(':id/version-history')
+  @ApiOperation({ summary: 'Get budget version history with OTB plans' })
+  getVersionHistory(@Param('id') id: string) {
+    return this.budgetsService.getVersionHistory(id);
+  }
+
+  @Get('stats/summary')
+  @ApiOperation({ summary: 'Get budget summary statistics' })
+  getSummaryStats(@Query() query: { seasonId?: string; brandId?: string }) {
+    return this.budgetsService.getSummaryStats(query);
   }
 }

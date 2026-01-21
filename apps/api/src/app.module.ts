@@ -24,7 +24,16 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
 import { AiModule } from './modules/ai/ai.module';
 import { WorkflowsModule } from './modules/workflows/workflows.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
+import { KpiModule } from './modules/kpi/kpi.module';
 import { IntegrationsModule } from './modules/integrations/integrations.module';
+import { WSSIModule } from './modules/wssi/wssi.module';
+import { VersionsModule } from './modules/versions/versions.module';
+import { SizeProfilesModule } from './modules/size-profiles/size-profiles.module';
+import { PowerBIModule } from './modules/powerbi/powerbi.module';
+import { SKUAnalysisModule } from './modules/sku-analysis/sku-analysis.module';
+import { ClearanceModule } from './modules/clearance/clearance.module';
+import { ReplenishmentModule } from './modules/replenishment/replenishment.module';
+import { ForecastingModule } from './modules/forecasting/forecasting.module';
 
 @Module({
   imports: [
@@ -72,9 +81,34 @@ import { IntegrationsModule } from './modules/integrations/integrations.module';
 
     // Analytics & KPI
     AnalyticsModule,
+    KpiModule,
 
     // Integrations (ERP, S3, Webhooks, API Keys)
     IntegrationsModule,
+
+    // WSSI (Weekly Sales Stock Intake)
+    WSSIModule,
+
+    // OTB Version Control
+    VersionsModule,
+
+    // Size Profiles
+    SizeProfilesModule,
+
+    // Power BI Integration
+    PowerBIModule,
+
+    // SKU Analysis
+    SKUAnalysisModule,
+
+    // Clearance Optimization
+    ClearanceModule,
+
+    // Replenishment (MOC/MOQ)
+    ReplenishmentModule,
+
+    // AI Forecasting
+    ForecastingModule,
   ],
   providers: [
     // Global exception filter for Prisma errors

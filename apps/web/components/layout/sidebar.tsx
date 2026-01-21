@@ -30,6 +30,10 @@ import {
   Lightbulb,
   Wand2,
   Bell,
+  CalendarDays,
+  TrendingDown,
+  Boxes,
+  LineChart,
 } from 'lucide-react';
 import {
   Collapsible,
@@ -48,6 +52,7 @@ const navigation = [
   { key: 'dashboard', href: '/', icon: LayoutDashboard },
   { key: 'budget', href: '/budget', icon: DollarSign },
   { key: 'otb', href: '/otb-analysis', icon: TrendingUp },
+  { key: 'wssi', href: '/wssi', icon: CalendarDays },
   { key: 'sku', href: '/sku-proposal', icon: Package },
   { key: 'approvals', href: '/approvals', icon: CheckSquare },
 ];
@@ -76,6 +81,12 @@ const aiItems = [
   { key: 'predictiveAlerts', href: '/predictive-alerts', icon: Bell },
 ];
 
+const operationsItems = [
+  { key: 'clearance', label: 'Clearance', href: '/clearance', icon: TrendingDown },
+  { key: 'replenishment', label: 'Replenishment', href: '/replenishment', icon: Boxes },
+  { key: 'forecasting', label: 'Forecasting', href: '/forecasting', icon: LineChart },
+];
+
 interface SidebarProps {
   collapsed?: boolean;
   onToggleCollapse?: () => void;
@@ -97,6 +108,9 @@ export function Sidebar({ collapsed = false, onToggleCollapse }: SidebarProps) {
   const [aiOpen, setAiOpen] = useState(
     pathname.startsWith('/ai-') || pathname === '/predictive-alerts'
   );
+  const [operationsOpen, setOperationsOpen] = useState(
+    pathname === '/clearance' || pathname === '/replenishment' || pathname === '/forecasting'
+  );
 
   return (
     <TooltipProvider delayDuration={0}>
@@ -104,33 +118,49 @@ export function Sidebar({ collapsed = false, onToggleCollapse }: SidebarProps) {
         "fixed left-0 top-0 z-40 h-screen bg-card border-r border-border flex flex-col transition-all duration-300",
         collapsed ? "w-[72px]" : "w-[260px]"
       )}>
-        {/* Logo */}
+        {/* Logo & Collapse Toggle */}
         <div className={cn(
           "h-16 flex items-center border-b border-border",
-          collapsed ? "px-3 justify-center" : "px-6"
+          collapsed ? "px-2 justify-center" : "px-4 justify-between"
         )}>
-          <Link href="/" className="flex items-center">
-            {collapsed ? (
-              <Image
-                src="/logo.svg"
-                alt="DAFC"
-                width={40}
-                height={40}
-                priority
-                className="object-contain"
-                style={{ height: 'auto' }}
-              />
-            ) : (
-              <Image
-                src="/logo.svg"
-                alt="DAFC"
-                width={140}
-                height={36}
-                priority
-                style={{ height: 'auto' }}
-              />
-            )}
-          </Link>
+          {collapsed ? (
+            /* Collapsed: Only show toggle button */
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={onToggleCollapse}
+                  className="flex items-center justify-center w-10 h-10 rounded-lg text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-all duration-150"
+                >
+                  <ChevronRight className="h-5 w-5" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="right" sideOffset={10}>
+                {tUi('expand')}
+              </TooltipContent>
+            </Tooltip>
+          ) : (
+            /* Expanded: Logo + Name + Toggle */
+            <>
+              <Link href="/" className="flex items-center">
+                <Image
+                  src="/logo.svg"
+                  alt="DAFC"
+                  width={140}
+                  height={36}
+                  priority
+                  style={{ height: 'auto' }}
+                />
+              </Link>
+              {onToggleCollapse && (
+                <button
+                  onClick={onToggleCollapse}
+                  className="flex items-center justify-center w-8 h-8 rounded-lg text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-all duration-150"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </button>
+              )}
+            </>
+          )}
         </div>
 
         {/* Navigation */}
@@ -294,7 +324,7 @@ export function Sidebar({ collapsed = false, onToggleCollapse }: SidebarProps) {
                         pathname.startsWith('/analytics') ? 'text-primary' : 'text-muted-foreground/70 group-hover:text-foreground dark:group-hover:text-white'
                       )} />
                       <span className="flex-1 text-left">{t('analytics')}</span>
-                      <span className="px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide bg-success-100 dark:bg-success-900/30 text-success-700 dark:text-success-400 rounded-full mr-1">
+                      <span className="px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide bg-dafc-gold/15 text-dafc-gold border border-dafc-gold/30 rounded-full mr-1">
                         {tUi('new')}
                       </span>
                       <ChevronDown
@@ -406,43 +436,87 @@ export function Sidebar({ collapsed = false, onToggleCollapse }: SidebarProps) {
                 </Collapsible>
               )}
             </li>
+
+            {/* Operations Collapsible (Phase 3) */}
+            <li>
+              {collapsed ? (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Link
+                      href="/clearance"
+                      className={cn(
+                        'group flex items-center justify-center px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150',
+                        (pathname === '/clearance' || pathname === '/replenishment' || pathname === '/forecasting')
+                          ? 'bg-primary/10 dark:bg-primary/20 text-primary'
+                          : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground dark:hover:text-white'
+                      )}
+                    >
+                      <TrendingDown className={cn(
+                        'h-5 w-5 flex-shrink-0',
+                        (pathname === '/clearance' || pathname === '/replenishment' || pathname === '/forecasting') ? 'text-primary' : 'text-muted-foreground/70 group-hover:text-foreground dark:group-hover:text-white'
+                      )} />
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent side="right" sideOffset={10}>
+                    Operations
+                  </TooltipContent>
+                </Tooltip>
+              ) : (
+                <Collapsible open={operationsOpen} onOpenChange={setOperationsOpen}>
+                  <CollapsibleTrigger asChild>
+                    <button
+                      className={cn(
+                        'group flex w-full items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 relative',
+                        (pathname === '/clearance' || pathname === '/replenishment' || pathname === '/forecasting')
+                          ? 'bg-primary/10 dark:bg-primary/20 text-primary'
+                          : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground dark:hover:text-white'
+                      )}
+                    >
+                      {(pathname === '/clearance' || pathname === '/replenishment' || pathname === '/forecasting') && (
+                        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-6 bg-primary rounded-r-full" />
+                      )}
+                      <TrendingDown className={cn(
+                        'h-5 w-5 flex-shrink-0',
+                        (pathname === '/clearance' || pathname === '/replenishment' || pathname === '/forecasting') ? 'text-primary' : 'text-muted-foreground/70 group-hover:text-foreground dark:group-hover:text-white'
+                      )} />
+                      <span className="flex-1 text-left">Operations</span>
+                      <span className="px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide bg-dafc-green/15 text-dafc-green-light border border-dafc-green/30 rounded-full mr-1">
+                        {tUi('new')}
+                      </span>
+                      <ChevronDown
+                        className={cn(
+                          'h-4 w-4 text-muted-foreground/70 transition-transform',
+                          operationsOpen && 'rotate-180'
+                        )}
+                      />
+                    </button>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="mt-1 space-y-1 pl-4">
+                    {operationsItems.map((item) => {
+                      const isActive = pathname === item.href;
+                      return (
+                        <Link
+                          key={item.key}
+                          href={item.href}
+                          className={cn(
+                            'group flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150',
+                            isActive
+                              ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary-foreground'
+                              : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground/80 dark:hover:text-white'
+                          )}
+                        >
+                          <item.icon className={cn('h-4 w-4', isActive ? 'text-primary dark:text-primary-foreground' : 'text-muted-foreground/70 group-hover:text-foreground dark:group-hover:text-white')} />
+                          <span>{item.label}</span>
+                        </Link>
+                      );
+                    })}
+                  </CollapsibleContent>
+                </Collapsible>
+              )}
+            </li>
           </ul>
         </nav>
 
-        {/* Collapse Toggle Button */}
-        {onToggleCollapse && (
-          <div className={cn(
-            "border-t border-border p-3",
-            collapsed ? "flex justify-center" : ""
-          )}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  onClick={onToggleCollapse}
-                  className={cn(
-                    "flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150",
-                    "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
-                    collapsed ? "justify-center w-full" : "w-full"
-                  )}
-                >
-                  {collapsed ? (
-                    <ChevronRight className="h-5 w-5" />
-                  ) : (
-                    <>
-                      <ChevronLeft className="h-5 w-5" />
-                      <span>{tUi('collapse')}</span>
-                    </>
-                  )}
-                </button>
-              </TooltipTrigger>
-              {collapsed && (
-                <TooltipContent side="right" sideOffset={10}>
-                  {tUi('expand')}
-                </TooltipContent>
-              )}
-            </Tooltip>
-          </div>
-        )}
       </aside>
     </TooltipProvider>
   );

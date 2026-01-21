@@ -53,7 +53,7 @@ enum OTBPlanStatus {
   UNDER_REVIEW
   APPROVED
   REJECTED
-  REVISED        // Added for legacy data compatibility
+  REVISED // Added for legacy data compatibility
   FINAL
 }
 
@@ -64,7 +64,7 @@ enum OTBVersionType {
   V3_REVIEWED
   VA_APPROVED
   VF_FINAL
-  REVISED        // Added for legacy data compatibility
+  REVISED // Added for legacy data compatibility
 }
 
 enum SKUProposalStatus {
@@ -76,7 +76,7 @@ enum SKUProposalStatus {
   SUBMITTED
   APPROVED
   REJECTED
-  REVISED        // Added for legacy data compatibility
+  REVISED // Added for legacy data compatibility
 }
 
 enum SKUValidationStatus {
@@ -138,28 +138,28 @@ enum NotificationPriority {
 // ============================================
 
 model User {
-  id            String     @id @default(cuid())
-  email         String     @unique
-  name          String
-  password      String
-  role          UserRole   @default(BRAND_PLANNER)
-  status        UserStatus @default(ACTIVE)
-  avatar        String?
+  id       String     @id @default(cuid())
+  email    String     @unique
+  name     String
+  password String
+  role     UserRole   @default(BRAND_PLANNER)
+  status   UserStatus @default(ACTIVE)
+  avatar   String?
 
-  assignedBrands Brand[]   @relation("UserBrands")
+  assignedBrands Brand[] @relation("UserBrands")
 
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
-  lastLoginAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  lastLoginAt DateTime?
 
   // Budget relations
-  createdBudgets    BudgetAllocation[] @relation("BudgetCreatedBy")
-  approvedBudgets   BudgetAllocation[] @relation("BudgetApprovedBy")
-  rejectedBudgets   BudgetAllocation[] @relation("BudgetRejectedBy")
+  createdBudgets  BudgetAllocation[] @relation("BudgetCreatedBy")
+  approvedBudgets BudgetAllocation[] @relation("BudgetApprovedBy")
+  rejectedBudgets BudgetAllocation[] @relation("BudgetRejectedBy")
 
   // OTB relations
-  createdOTBPlans   OTBPlan[] @relation("OTBCreatedBy")
-  approvedOTBPlans  OTBPlan[] @relation("OTBApprovedBy")
+  createdOTBPlans  OTBPlan[] @relation("OTBCreatedBy")
+  approvedOTBPlans OTBPlan[] @relation("OTBApprovedBy")
 
   // SKU relations
   createdSKUProposals  SKUProposal[] @relation("SKUCreatedBy")
@@ -171,43 +171,59 @@ model User {
   actionedSteps      WorkflowStep[] @relation("StepActionBy")
 
   // Other relations
-  notifications      Notification[]
-  aiInteractions     AIInteractionLog[]
-  comments           Comment[]
-  resolvedComments   Comment[] @relation("CommentResolvedBy")
+  notifications    Notification[]
+  aiInteractions   AIInteractionLog[]
+  comments         Comment[]
+  resolvedComments Comment[]          @relation("CommentResolvedBy")
 
   // Sprint 4 relations
-  auditLogs          AuditLog[]
-  savedFilters       SavedFilter[]
-  preference         UserPreference?
-  reports            Report[]
-  reportExecutions   ReportExecution[]
-  recentSearches     RecentSearch[]
+  auditLogs        AuditLog[]
+  savedFilters     SavedFilter[]
+  preference       UserPreference?
+  reports          Report[]
+  reportExecutions ReportExecution[]
+  recentSearches   RecentSearch[]
 
   // Sprint 5 relations
-  kpiTargets         KPITarget[]
+  kpiTargets            KPITarget[]
   kpiAlertsAcknowledged KPIAlert[]
-  forecasts          Forecast[]
-  scenarios          Scenario[]
-  aiInsights         AIInsight[]
-  dashboardWidgets   DashboardWidget[]
+  forecasts             Forecast[]
+  scenarios             Scenario[]
+  aiInsights            AIInsight[]
+  dashboardWidgets      DashboardWidget[]
 
   // Sprint 8 relations
-  aiConversations    AIConversation[]
-  aiSuggestions      AISuggestion[]
-  aiGeneratedPlans   AIGeneratedPlan[]
-  predictiveAlerts   PredictiveAlert[]
+  aiConversations  AIConversation[]
+  aiSuggestions    AISuggestion[]
+  aiGeneratedPlans AIGeneratedPlan[]
+  predictiveAlerts PredictiveAlert[]
 
   // Sprint 6 relations
-  accounts               Account[]
-  storedFiles            StoredFile[]
-  erpSyncLogs            ERPSyncLog[]
-  webhooks               Webhook[]
-  apiKeys                APIKey[]
-  realtimeNotifications  RealtimeNotification[]
+  accounts              Account[]
+  storedFiles           StoredFile[]
+  erpSyncLogs           ERPSyncLog[]
+  webhooks              Webhook[]
+  apiKeys               APIKey[]
+  realtimeNotifications RealtimeNotification[]
 
   // Automation relations
   automationRulesCreated AutomationRule[] @relation("AutomationRuleCreatedBy")
+
+  // WSSI relations
+  wssiRecordsCreated      WSSIRecord[] @relation("WSSICreator")
+  wssiRecordsReforecasted WSSIRecord[] @relation("WSSIReforecaster")
+  wssiAlertsAcknowledged  WSSIAlert[]  @relation("WSSIAlertAcknowledger")
+
+  // Budget Change Log relations
+  budgetChangeLogs BudgetChangeLog[] @relation("BudgetChangeLogUser")
+
+  // OTB Version relations
+  otbVersionsCreated   OTBPlanVersion[] @relation("OTBVersionCreator")
+  otbVersionsSubmitted OTBPlanVersion[] @relation("OTBVersionSubmitter")
+  otbVersionsApproved  OTBPlanVersion[] @relation("OTBVersionApprover")
+
+  // Size Profile relations
+  sizeProfilesCreated SizeProfile[] @relation("SizeProfileCreator")
 
   @@map("users")
 }
@@ -217,68 +233,76 @@ model User {
 // ============================================
 
 model Division {
-  id          String   @id @default(cuid())
-  name        String   @unique
-  code        String   @unique
+  id          String  @id @default(cuid())
+  name        String  @unique
+  code        String  @unique
   description String?
-  isActive    Boolean  @default(true)
-  sortOrder   Int      @default(0)
+  isActive    Boolean @default(true)
+  sortOrder   Int     @default(0)
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  brands      Brand[]
+  brands Brand[]
+
+  // WSSI relations
+  wssiRecords    WSSIRecord[]
+  wssiThresholds WSSIThreshold[]
 
   @@map("divisions")
 }
 
 model Brand {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   name        String
-  code        String   @unique
+  code        String  @unique
   description String?
   logoUrl     String?
-  isActive    Boolean  @default(true)
-  sortOrder   Int      @default(0)
+  isActive    Boolean @default(true)
+  sortOrder   Int     @default(0)
 
-  divisionId  String
-  division    Division @relation(fields: [divisionId], references: [id])
+  divisionId String
+  division   Division @relation(fields: [divisionId], references: [id])
 
   assignedUsers User[] @relation("UserBrands")
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  collections   Collection[]
-  budgets       BudgetAllocation[]
-  otbPlans      OTBPlan[]
-  skuProposals  SKUProposal[]
+  collections  Collection[]
+  budgets      BudgetAllocation[]
+  otbPlans     OTBPlan[]
+  skuProposals SKUProposal[]
 
   // Sprint 5 relations
-  kpiTargets    KPITarget[]
-  forecasts     Forecast[]
+  kpiTargets KPITarget[]
+  forecasts  Forecast[]
 
   // Sprint 8 relations
-  aiSuggestions     AISuggestion[]
-  aiGeneratedPlans  AIGeneratedPlan[]
-  predictiveAlerts  PredictiveAlert[]
+  aiSuggestions    AISuggestion[]
+  aiGeneratedPlans AIGeneratedPlan[]
+  predictiveAlerts PredictiveAlert[]
+
+  // WSSI relations
+  wssiRecords    WSSIRecord[]    @relation("WSSIBrand")
+  wssiThresholds WSSIThreshold[] @relation("WSSIThresholdBrand")
 
   @@map("brands")
 }
 
 model Collection {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   name        String
   code        String
   description String?
-  isActive    Boolean  @default(true)
-  sortOrder   Int      @default(0)
+  isActive    Boolean @default(true)
+  sortOrder   Int     @default(0)
 
-  brandId     String
-  brand       Brand    @relation(fields: [brandId], references: [id])
+  brandId String
+  brand   Brand  @relation(fields: [brandId], references: [id])
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   otbLineItems OTBLineItem[]
   skuItems     SKUItem[]
@@ -292,48 +316,61 @@ model Collection {
 // ============================================
 
 model Category {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   name        String
-  code        String   @unique
+  code        String  @unique
   description String?
-  isActive    Boolean  @default(true)
-  sortOrder   Int      @default(0)
+  isActive    Boolean @default(true)
+  sortOrder   Int     @default(0)
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  subcategories   Subcategory[]
-  otbLineItems    OTBLineItem[]
-  sizingAnalyses  SizingAnalysis[]
-  skuItems        SKUItem[]
+  subcategories  Subcategory[]
+  otbLineItems   OTBLineItem[]
+  sizingAnalyses SizingAnalysis[]
+  skuItems       SKUItem[]
 
   // Sprint 5 relations
-  forecasts       Forecast[]
+  forecasts Forecast[]
 
   // Sprint 8 relations
-  aiSuggestions     AISuggestion[]
-  predictiveAlerts  PredictiveAlert[]
+  aiSuggestions    AISuggestion[]
+  predictiveAlerts PredictiveAlert[]
+
+  // WSSI relations
+  wssiRecords    WSSIRecord[]    @relation("WSSICategory")
+  wssiThresholds WSSIThreshold[] @relation("WSSIThresholdCategory")
+
+  // Size Profile relations
+  sizeProfiles SizeProfile[] @relation("SizeProfileCategory")
 
   @@map("categories")
 }
 
 model Subcategory {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   name        String
   code        String
   description String?
-  isActive    Boolean  @default(true)
-  sortOrder   Int      @default(0)
+  isActive    Boolean @default(true)
+  sortOrder   Int     @default(0)
 
-  categoryId  String
-  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  otbLineItems    OTBLineItem[]
-  sizingAnalyses  SizingAnalysis[]
-  skuItems        SKUItem[]
+  otbLineItems   OTBLineItem[]
+  sizingAnalyses SizingAnalysis[]
+  skuItems       SKUItem[]
+
+  // WSSI relations
+  wssiRecords WSSIRecord[] @relation("WSSISubcategory")
+
+  // Size Profile relations
+  sizeProfiles SizeProfile[] @relation("SizeProfileSubcategory")
 
   @@unique([categoryId, code])
   @@map("subcategories")
@@ -344,22 +381,28 @@ model Subcategory {
 // ============================================
 
 model SalesLocation {
-  id          String   @id @default(cuid())
-  name        String
-  code        String   @unique
-  type        String   @default("STORE")
-  address     String?
-  isActive    Boolean  @default(true)
-  sortOrder   Int      @default(0)
+  id        String  @id @default(cuid())
+  name      String
+  code      String  @unique
+  type      String  @default("STORE")
+  address   String?
+  isActive  Boolean @default(true)
+  sortOrder Int     @default(0)
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  budgets         BudgetAllocation[]
-  sizingAnalyses  SizingAnalysis[]
+  budgets        BudgetAllocation[]
+  sizingAnalyses SizingAnalysis[]
 
   // Sprint 5 relations
-  kpiTargets      KPITarget[]
+  kpiTargets KPITarget[]
+
+  // WSSI relations
+  wssiRecords WSSIRecord[] @relation("WSSILocation")
+
+  // Size Profile relations
+  sizeProfiles SizeProfile[] @relation("SizeProfileLocation")
 
   @@map("sales_locations")
 }
@@ -379,22 +422,28 @@ model Season {
   isActive    Boolean  @default(true)
   isCurrent   Boolean  @default(false)
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  budgets       BudgetAllocation[]
-  otbPlans      OTBPlan[]
-  skuProposals  SKUProposal[]
+  budgets      BudgetAllocation[]
+  otbPlans     OTBPlan[]
+  skuProposals SKUProposal[]
 
   // Sprint 5 relations
-  kpiTargets    KPITarget[]
-  forecasts     Forecast[]
-  scenarios     Scenario[]
+  kpiTargets KPITarget[]
+  forecasts  Forecast[]
+  scenarios  Scenario[]
 
   // Sprint 8 relations
-  aiSuggestions     AISuggestion[]
-  aiGeneratedPlans  AIGeneratedPlan[]
-  predictiveAlerts  PredictiveAlert[]
+  aiSuggestions    AISuggestion[]
+  aiGeneratedPlans AIGeneratedPlan[]
+  predictiveAlerts PredictiveAlert[]
+
+  // WSSI relations
+  wssiRecords WSSIRecord[] @relation("WSSISeason")
+
+  // Size Profile relations
+  sizeProfiles SizeProfile[] @relation("SizeProfileSeason")
 
   @@map("seasons")
 }
@@ -404,53 +453,56 @@ model Season {
 // ============================================
 
 model BudgetAllocation {
-  id                  String       @id @default(cuid())
+  id String @id @default(cuid())
 
   // References
-  seasonId            String
-  season              Season       @relation(fields: [seasonId], references: [id])
-  brandId             String
-  brand               Brand        @relation(fields: [brandId], references: [id])
-  locationId          String
-  location            SalesLocation @relation(fields: [locationId], references: [id])
+  seasonId   String
+  season     Season        @relation(fields: [seasonId], references: [id])
+  brandId    String
+  brand      Brand         @relation(fields: [brandId], references: [id])
+  locationId String
+  location   SalesLocation @relation(fields: [locationId], references: [id])
 
   // Budget amounts
-  totalBudget         Decimal      @db.Decimal(15, 2)
-  seasonalBudget      Decimal?     @db.Decimal(15, 2)
-  replenishmentBudget Decimal?     @db.Decimal(15, 2)
-  currency            String       @default("USD")
+  totalBudget         Decimal  @db.Decimal(15, 2)
+  seasonalBudget      Decimal? @db.Decimal(15, 2)
+  replenishmentBudget Decimal? @db.Decimal(15, 2)
+  currency            String   @default("USD")
 
   // Status & Version
-  status              BudgetStatus @default(DRAFT)
-  version             Int          @default(1)
-  parentVersionId     String?
-  parentVersion       BudgetAllocation? @relation("BudgetVersions", fields: [parentVersionId], references: [id])
-  childVersions       BudgetAllocation[] @relation("BudgetVersions")
+  status          BudgetStatus       @default(DRAFT)
+  version         Int                @default(1)
+  parentVersionId String?
+  parentVersion   BudgetAllocation?  @relation("BudgetVersions", fields: [parentVersionId], references: [id])
+  childVersions   BudgetAllocation[] @relation("BudgetVersions")
 
   // Comments & Metadata
-  comments            String?      @db.Text
-  assumptions         Json?
+  comments    String? @db.Text
+  assumptions Json?
 
   // Workflow
-  workflowId          String?
-  workflow            Workflow?    @relation(fields: [workflowId], references: [id])
+  workflowId String?
+  workflow   Workflow? @relation(fields: [workflowId], references: [id])
 
   // Audit
-  createdById         String
-  createdBy           User         @relation("BudgetCreatedBy", fields: [createdById], references: [id])
-  createdAt           DateTime     @default(now())
-  submittedAt         DateTime?
-  approvedById        String?
-  approvedBy          User?        @relation("BudgetApprovedBy", fields: [approvedById], references: [id])
-  approvedAt          DateTime?
-  rejectedById        String?
-  rejectedBy          User?        @relation("BudgetRejectedBy", fields: [rejectedById], references: [id])
-  rejectedAt          DateTime?
-  rejectionReason     String?
-  updatedAt           DateTime     @updatedAt
+  createdById     String
+  createdBy       User      @relation("BudgetCreatedBy", fields: [createdById], references: [id])
+  createdAt       DateTime  @default(now())
+  submittedAt     DateTime?
+  approvedById    String?
+  approvedBy      User?     @relation("BudgetApprovedBy", fields: [approvedById], references: [id])
+  approvedAt      DateTime?
+  rejectedById    String?
+  rejectedBy      User?     @relation("BudgetRejectedBy", fields: [rejectedById], references: [id])
+  rejectedAt      DateTime?
+  rejectionReason String?
+  updatedAt       DateTime  @updatedAt
 
   // Relations
-  otbPlans            OTBPlan[]
+  otbPlans OTBPlan[]
+
+  // Version Control relations
+  changeLogs BudgetChangeLog[]
 
   @@unique([seasonId, brandId, locationId, version])
   @@map("budget_allocations")
@@ -461,139 +513,142 @@ model BudgetAllocation {
 // ============================================
 
 model OTBPlan {
-  id                  String         @id @default(cuid())
+  id String @id @default(cuid())
 
   // References
-  budgetId            String
-  budget              BudgetAllocation @relation(fields: [budgetId], references: [id])
-  seasonId            String
-  season              Season         @relation(fields: [seasonId], references: [id])
-  brandId             String
-  brand               Brand          @relation(fields: [brandId], references: [id])
+  budgetId String
+  budget   BudgetAllocation @relation(fields: [budgetId], references: [id])
+  seasonId String
+  season   Season           @relation(fields: [seasonId], references: [id])
+  brandId  String
+  brand    Brand            @relation(fields: [brandId], references: [id])
 
   // Version tracking
-  version             Int            @default(1)
-  versionType         OTBVersionType @default(V0_SYSTEM)
-  versionName         String?
-  parentVersionId     String?
-  parentVersion       OTBPlan?       @relation("OTBVersions", fields: [parentVersionId], references: [id])
-  childVersions       OTBPlan[]      @relation("OTBVersions")
+  version         Int            @default(1)
+  versionType     OTBVersionType @default(V0_SYSTEM)
+  versionName     String?
+  parentVersionId String?
+  parentVersion   OTBPlan?       @relation("OTBVersions", fields: [parentVersionId], references: [id])
+  childVersions   OTBPlan[]      @relation("OTBVersions")
 
   // Status
-  status              OTBPlanStatus  @default(DRAFT)
+  status OTBPlanStatus @default(DRAFT)
 
   // Totals
-  totalOTBValue       Decimal        @db.Decimal(15, 2)
-  totalSKUCount       Int            @default(0)
+  totalOTBValue Decimal @db.Decimal(15, 2)
+  totalSKUCount Int     @default(0)
 
   // AI Metadata
-  aiConfidenceScore   Float?
-  aiGeneratedAt       DateTime?
-  aiModelUsed         String?
+  aiConfidenceScore Float?
+  aiGeneratedAt     DateTime?
+  aiModelUsed       String?
 
   // Comments
-  comments            String?        @db.Text
-  executiveSummary    String?        @db.Text
+  comments         String? @db.Text
+  executiveSummary String? @db.Text
 
   // Workflow
-  workflowId          String?
-  workflow            Workflow?      @relation(fields: [workflowId], references: [id])
+  workflowId String?
+  workflow   Workflow? @relation(fields: [workflowId], references: [id])
 
   // Audit
-  createdById         String
-  createdBy           User           @relation("OTBCreatedBy", fields: [createdById], references: [id])
-  createdAt           DateTime       @default(now())
-  submittedAt         DateTime?
-  approvedById        String?
-  approvedBy          User?          @relation("OTBApprovedBy", fields: [approvedById], references: [id])
-  approvedAt          DateTime?
-  updatedAt           DateTime       @updatedAt
+  createdById  String
+  createdBy    User      @relation("OTBCreatedBy", fields: [createdById], references: [id])
+  createdAt    DateTime  @default(now())
+  submittedAt  DateTime?
+  approvedById String?
+  approvedBy   User?     @relation("OTBApprovedBy", fields: [approvedById], references: [id])
+  approvedAt   DateTime?
+  updatedAt    DateTime  @updatedAt
 
   // Line items
-  lineItems           OTBLineItem[]
-  sizingAnalysis      SizingAnalysis[]
-  skuProposals        SKUProposal[]
+  lineItems      OTBLineItem[]
+  sizingAnalysis SizingAnalysis[]
+  skuProposals   SKUProposal[]
+
+  // Version Control relations
+  versions OTBPlanVersion[]
 
   @@unique([budgetId, version])
   @@map("otb_plans")
 }
 
 model OTBLineItem {
-  id                  String    @id @default(cuid())
+  id String @id @default(cuid())
 
-  otbPlanId           String
-  otbPlan             OTBPlan   @relation(fields: [otbPlanId], references: [id], onDelete: Cascade)
+  otbPlanId String
+  otbPlan   OTBPlan @relation(fields: [otbPlanId], references: [id], onDelete: Cascade)
 
   // Hierarchy
-  level               Int
-  collectionId        String?
-  collection          Collection? @relation(fields: [collectionId], references: [id])
-  gender              Gender?
-  categoryId          String?
-  category            Category?  @relation(fields: [categoryId], references: [id])
-  subcategoryId       String?
-  subcategory         Subcategory? @relation(fields: [subcategoryId], references: [id])
-  sizeGroup           String?
+  level         Int
+  collectionId  String?
+  collection    Collection?  @relation(fields: [collectionId], references: [id])
+  gender        Gender?
+  categoryId    String?
+  category      Category?    @relation(fields: [categoryId], references: [id])
+  subcategoryId String?
+  subcategory   Subcategory? @relation(fields: [subcategoryId], references: [id])
+  sizeGroup     String?
 
   // Historical data
-  historicalSalesPct  Decimal?   @db.Decimal(5, 2)
-  historicalSalesValue Decimal?  @db.Decimal(15, 2)
-  historicalUnits     Int?
+  historicalSalesPct   Decimal? @db.Decimal(5, 2)
+  historicalSalesValue Decimal? @db.Decimal(15, 2)
+  historicalUnits      Int?
 
   // System proposal
-  systemProposedPct   Decimal?   @db.Decimal(5, 2)
-  systemProposedValue Decimal?   @db.Decimal(15, 2)
+  systemProposedPct   Decimal? @db.Decimal(5, 2)
+  systemProposedValue Decimal? @db.Decimal(15, 2)
   systemConfidence    Float?
 
   // User input
-  userBuyPct          Decimal    @db.Decimal(5, 2)
-  userBuyValue        Decimal    @db.Decimal(15, 2)
-  userUnits           Int?
+  userBuyPct   Decimal @db.Decimal(5, 2)
+  userBuyValue Decimal @db.Decimal(15, 2)
+  userUnits    Int?
 
   // Variance
-  varianceFromSystem  Decimal?   @db.Decimal(5, 2)
-  varianceFromHist    Decimal?   @db.Decimal(5, 2)
+  varianceFromSystem Decimal? @db.Decimal(5, 2)
+  varianceFromHist   Decimal? @db.Decimal(5, 2)
 
   // Comments
-  comment             String?    @db.Text
-  aiGeneratedComment  String?    @db.Text
+  comment            String? @db.Text
+  aiGeneratedComment String? @db.Text
 
   // Status flags
-  hasAnomaly          Boolean    @default(false)
-  anomalyType         String?
-  isLocked            Boolean    @default(false)
+  hasAnomaly  Boolean @default(false)
+  anomalyType String?
+  isLocked    Boolean @default(false)
 
-  createdAt           DateTime   @default(now())
-  updatedAt           DateTime   @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([otbPlanId, level])
   @@map("otb_line_items")
 }
 
 model SizingAnalysis {
-  id                  String    @id @default(cuid())
+  id String @id @default(cuid())
 
-  otbPlanId           String
-  otbPlan             OTBPlan   @relation(fields: [otbPlanId], references: [id], onDelete: Cascade)
+  otbPlanId String
+  otbPlan   OTBPlan @relation(fields: [otbPlanId], references: [id], onDelete: Cascade)
 
   // Context
-  categoryId          String
-  category            Category  @relation(fields: [categoryId], references: [id])
-  subcategoryId       String?
-  subcategory         Subcategory? @relation(fields: [subcategoryId], references: [id])
-  gender              Gender
-  locationId          String?
-  location            SalesLocation? @relation(fields: [locationId], references: [id])
+  categoryId    String
+  category      Category       @relation(fields: [categoryId], references: [id])
+  subcategoryId String?
+  subcategory   Subcategory?   @relation(fields: [subcategoryId], references: [id])
+  gender        Gender
+  locationId    String?
+  location      SalesLocation? @relation(fields: [locationId], references: [id])
 
   // Size data (stored as JSON for flexibility)
-  sizeData            Json
+  sizeData Json
 
   // AI insights
-  aiInsight           String?   @db.Text
-  aiRecommendation    String?   @db.Text
+  aiInsight        String? @db.Text
+  aiRecommendation String? @db.Text
 
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("sizing_analyses")
 }
@@ -603,117 +658,117 @@ model SizingAnalysis {
 // ============================================
 
 model SKUProposal {
-  id                  String             @id @default(cuid())
+  id String @id @default(cuid())
 
   // References
-  otbPlanId           String
-  otbPlan             OTBPlan            @relation(fields: [otbPlanId], references: [id], onDelete: Cascade)
-  seasonId            String
-  season              Season             @relation(fields: [seasonId], references: [id])
-  brandId             String
-  brand               Brand              @relation(fields: [brandId], references: [id])
+  otbPlanId String
+  otbPlan   OTBPlan @relation(fields: [otbPlanId], references: [id], onDelete: Cascade)
+  seasonId  String
+  season    Season  @relation(fields: [seasonId], references: [id])
+  brandId   String
+  brand     Brand   @relation(fields: [brandId], references: [id])
 
   // Upload info
-  uploadedFileName    String?
-  uploadedFileUrl     String?
-  uploadedAt          DateTime?
+  uploadedFileName String?
+  uploadedFileUrl  String?
+  uploadedAt       DateTime?
 
   // Status
-  status              SKUProposalStatus  @default(DRAFT)
+  status SKUProposalStatus @default(DRAFT)
 
   // Counts
-  totalSKUs           Int                @default(0)
-  validSKUs           Int                @default(0)
-  errorSKUs           Int                @default(0)
-  warningSKUs         Int                @default(0)
+  totalSKUs   Int @default(0)
+  validSKUs   Int @default(0)
+  errorSKUs   Int @default(0)
+  warningSKUs Int @default(0)
 
   // Totals
-  totalValue          Decimal?           @db.Decimal(15, 2)
-  totalUnits          Int?
+  totalValue Decimal? @db.Decimal(15, 2)
+  totalUnits Int?
 
   // Workflow
-  workflowId          String?
-  workflow            Workflow?          @relation(fields: [workflowId], references: [id])
+  workflowId String?
+  workflow   Workflow? @relation(fields: [workflowId], references: [id])
 
   // Audit
-  createdById         String
-  createdBy           User               @relation("SKUCreatedBy", fields: [createdById], references: [id])
-  createdAt           DateTime           @default(now())
-  submittedAt         DateTime?
-  approvedById        String?
-  approvedBy          User?              @relation("SKUApprovedBy", fields: [approvedById], references: [id])
-  approvedAt          DateTime?
-  updatedAt           DateTime           @updatedAt
+  createdById  String
+  createdBy    User      @relation("SKUCreatedBy", fields: [createdById], references: [id])
+  createdAt    DateTime  @default(now())
+  submittedAt  DateTime?
+  approvedById String?
+  approvedBy   User?     @relation("SKUApprovedBy", fields: [approvedById], references: [id])
+  approvedAt   DateTime?
+  updatedAt    DateTime  @updatedAt
 
   // Items
-  items               SKUItem[]
+  items SKUItem[]
 
   @@map("sku_proposals")
 }
 
 model SKUItem {
-  id                  String              @id @default(cuid())
+  id String @id @default(cuid())
 
-  proposalId          String
-  proposal            SKUProposal         @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  proposalId String
+  proposal   SKUProposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
 
   // SKU info
-  skuCode             String
-  styleName           String
-  colorCode           String?
-  colorName           String?
-  material            String?
+  skuCode   String
+  styleName String
+  colorCode String?
+  colorName String?
+  material  String?
 
   // Hierarchy
-  collectionId        String?
-  collection          Collection?         @relation(fields: [collectionId], references: [id])
-  gender              Gender
-  categoryId          String
-  category            Category            @relation(fields: [categoryId], references: [id])
-  subcategoryId       String?
-  subcategory         Subcategory?        @relation(fields: [subcategoryId], references: [id])
+  collectionId  String?
+  collection    Collection?  @relation(fields: [collectionId], references: [id])
+  gender        Gender
+  categoryId    String
+  category      Category     @relation(fields: [categoryId], references: [id])
+  subcategoryId String?
+  subcategory   Subcategory? @relation(fields: [subcategoryId], references: [id])
 
   // Pricing
-  retailPrice         Decimal             @db.Decimal(15, 2)
-  costPrice           Decimal             @db.Decimal(15, 2)
-  margin              Decimal?            @db.Decimal(5, 2)
+  retailPrice Decimal  @db.Decimal(15, 2)
+  costPrice   Decimal  @db.Decimal(15, 2)
+  margin      Decimal? @db.Decimal(5, 2)
 
   // Order
-  orderQuantity       Int
-  orderValue          Decimal?            @db.Decimal(15, 2)
+  orderQuantity Int
+  orderValue    Decimal? @db.Decimal(15, 2)
 
   // Size breakdown (JSON array)
-  sizeBreakdown       Json?
+  sizeBreakdown Json?
 
   // Supplier info
-  supplierSKU         String?
-  leadTime            Int?
-  moq                 Int?
-  countryOfOrigin     String?
+  supplierSKU     String?
+  leadTime        Int?
+  moq             Int?
+  countryOfOrigin String?
 
   // Validation
-  validationStatus    SKUValidationStatus @default(PENDING)
-  validationErrors    Json?
-  validationWarnings  Json?
+  validationStatus   SKUValidationStatus @default(PENDING)
+  validationErrors   Json?
+  validationWarnings Json?
 
   // AI Enrichment
-  aiDemandScore       Float?
-  aiDemandPrediction  String?
-  aiRecommendedQty    Int?
-  aiSimilarSKUs       Json?
-  aiInsights          String?             @db.Text
-  aiEnrichedAt        DateTime?
+  aiDemandScore      Float?
+  aiDemandPrediction String?
+  aiRecommendedQty   Int?
+  aiSimilarSKUs      Json?
+  aiInsights         String?   @db.Text
+  aiEnrichedAt       DateTime?
 
   // Image
-  imageUrl            String?
-  imageUploadedAt     DateTime?
+  imageUrl        String?
+  imageUploadedAt DateTime?
 
   // Status flags
-  isNew               Boolean             @default(true)
-  isActive            Boolean             @default(true)
+  isNew    Boolean @default(true)
+  isActive Boolean @default(true)
 
-  createdAt           DateTime            @default(now())
-  updatedAt           DateTime            @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([proposalId, skuCode])
   @@index([proposalId, validationStatus])
@@ -725,40 +780,40 @@ model SKUItem {
 // ============================================
 
 model Workflow {
-  id                  String          @id @default(cuid())
+  id String @id @default(cuid())
 
   // Type & Reference
-  type                WorkflowType
-  referenceId         String
-  referenceType       String
+  type          WorkflowType
+  referenceId   String
+  referenceType String
 
   // Status
-  status              WorkflowStatus  @default(PENDING)
-  currentStep         Int             @default(1)
-  totalSteps          Int
+  status      WorkflowStatus @default(PENDING)
+  currentStep Int            @default(1)
+  totalSteps  Int
 
   // Initiator
-  initiatedById       String
-  initiatedBy         User            @relation("WorkflowInitiatedBy", fields: [initiatedById], references: [id])
-  initiatedAt         DateTime        @default(now())
+  initiatedById String
+  initiatedBy   User     @relation("WorkflowInitiatedBy", fields: [initiatedById], references: [id])
+  initiatedAt   DateTime @default(now())
 
   // Completion
-  completedAt         DateTime?
+  completedAt DateTime?
 
   // SLA
-  slaDeadline         DateTime?
-  slaBreached         Boolean         @default(false)
+  slaDeadline DateTime?
+  slaBreached Boolean   @default(false)
 
   // Steps
-  steps               WorkflowStep[]
+  steps WorkflowStep[]
 
   // Relations
-  budgets             BudgetAllocation[]
-  otbPlans            OTBPlan[]
-  skuProposals        SKUProposal[]
+  budgets      BudgetAllocation[]
+  otbPlans     OTBPlan[]
+  skuProposals SKUProposal[]
 
-  createdAt           DateTime        @default(now())
-  updatedAt           DateTime        @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([type, status])
   @@index([referenceId, referenceType])
@@ -766,37 +821,37 @@ model Workflow {
 }
 
 model WorkflowStep {
-  id                  String              @id @default(cuid())
+  id String @id @default(cuid())
 
-  workflowId          String
-  workflow            Workflow            @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  workflowId String
+  workflow   Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
 
   // Step info
-  stepNumber          Int
-  stepName            String
-  description         String?
+  stepNumber  Int
+  stepName    String
+  description String?
 
   // Assignment
-  assignedRole        UserRole?
-  assignedUserId      String?
-  assignedUser        User?               @relation("StepAssignedTo", fields: [assignedUserId], references: [id])
+  assignedRole   UserRole?
+  assignedUserId String?
+  assignedUser   User?     @relation("StepAssignedTo", fields: [assignedUserId], references: [id])
 
   // Status
-  status              WorkflowStepStatus  @default(PENDING)
+  status WorkflowStepStatus @default(PENDING)
 
   // Action
-  actionById          String?
-  actionBy            User?               @relation("StepActionBy", fields: [actionById], references: [id])
-  actionAt            DateTime?
-  actionType          String?
-  actionComment       String?             @db.Text
+  actionById    String?
+  actionBy      User?     @relation("StepActionBy", fields: [actionById], references: [id])
+  actionAt      DateTime?
+  actionType    String?
+  actionComment String?   @db.Text
 
   // SLA
-  slaHours            Int?
-  dueAt               DateTime?
+  slaHours Int?
+  dueAt    DateTime?
 
-  createdAt           DateTime            @default(now())
-  updatedAt           DateTime            @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([workflowId, stepNumber])
   @@map("workflow_steps")
@@ -807,32 +862,32 @@ model WorkflowStep {
 // ============================================
 
 model Notification {
-  id                  String               @id @default(cuid())
+  id String @id @default(cuid())
 
   // Recipient
-  userId              String
-  user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // Content
-  type                NotificationType
-  priority            NotificationPriority @default(MEDIUM)
-  title               String
-  message             String               @db.Text
+  type     NotificationType
+  priority NotificationPriority @default(MEDIUM)
+  title    String
+  message  String               @db.Text
 
   // Reference
-  referenceId         String?
-  referenceType       String?
-  referenceUrl        String?
+  referenceId   String?
+  referenceType String?
+  referenceUrl  String?
 
   // Status
-  isRead              Boolean              @default(false)
-  readAt              DateTime?
+  isRead Boolean   @default(false)
+  readAt DateTime?
 
   // Email
-  emailSent           Boolean              @default(false)
-  emailSentAt         DateTime?
+  emailSent   Boolean   @default(false)
+  emailSentAt DateTime?
 
-  createdAt           DateTime             @default(now())
+  createdAt DateTime @default(now())
 
   @@index([userId, isRead])
   @@index([userId, createdAt])
@@ -844,30 +899,30 @@ model Notification {
 // ============================================
 
 model AIInteractionLog {
-  id                  String    @id @default(cuid())
+  id String @id @default(cuid())
 
   // User
-  userId              String
-  user                User      @relation(fields: [userId], references: [id])
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 
   // Context
-  contextType         String
-  contextId           String?
+  contextType String
+  contextId   String?
 
   // Request
-  prompt              String    @db.Text
-  model               String
+  prompt String @db.Text
+  model  String
 
   // Response
-  response            String    @db.Text
-  tokensUsed          Int?
-  latencyMs           Int?
+  response   String @db.Text
+  tokensUsed Int?
+  latencyMs  Int?
 
   // Feedback
-  wasAccepted         Boolean?
-  userFeedback        String?
+  wasAccepted  Boolean?
+  userFeedback String?
 
-  createdAt           DateTime  @default(now())
+  createdAt DateTime @default(now())
 
   @@index([userId, contextType])
   @@map("ai_interaction_logs")
@@ -878,33 +933,33 @@ model AIInteractionLog {
 // ============================================
 
 model Comment {
-  id                  String    @id @default(cuid())
+  id String @id @default(cuid())
 
   // Reference
-  referenceId         String
-  referenceType       String
+  referenceId   String
+  referenceType String
 
   // Thread
-  parentId            String?
-  parent              Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
-  replies             Comment[] @relation("CommentReplies")
+  parentId String?
+  parent   Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  replies  Comment[] @relation("CommentReplies")
 
   // Content
-  content             String    @db.Text
-  isAIGenerated       Boolean   @default(false)
+  content       String  @db.Text
+  isAIGenerated Boolean @default(false)
 
   // Author
-  authorId            String
-  author              User      @relation(fields: [authorId], references: [id])
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id])
 
   // Status
-  isResolved          Boolean   @default(false)
-  resolvedById        String?
-  resolvedBy          User?     @relation("CommentResolvedBy", fields: [resolvedById], references: [id])
-  resolvedAt          DateTime?
+  isResolved   Boolean   @default(false)
+  resolvedById String?
+  resolvedBy   User?     @relation("CommentResolvedBy", fields: [resolvedById], references: [id])
+  resolvedAt   DateTime?
 
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([referenceId, referenceType])
   @@map("comments")
@@ -915,19 +970,19 @@ model Comment {
 // ============================================
 
 model AuditLog {
-  id          String   @id @default(cuid())
-  tableName   String
-  recordId    String
-  action      String
-  oldValue    Json?
-  newValue    Json?
+  id            String   @id @default(cuid())
+  tableName     String
+  recordId      String
+  action        String
+  oldValue      Json?
+  newValue      Json?
   changedFields String[]
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
-  userEmail   String
-  ipAddress   String?
-  userAgent   String?
-  createdAt   DateTime @default(now())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  userEmail     String
+  ipAddress     String?
+  userAgent     String?
+  createdAt     DateTime @default(now())
 
   @@index([tableName, recordId])
   @@index([userId])
@@ -940,19 +995,19 @@ model AuditLog {
 // ============================================
 
 model SavedFilter {
-  id          String   @id @default(cuid())
-  name        String
-  description String?
-  entityType  String
+  id           String  @id @default(cuid())
+  name         String
+  description  String?
+  entityType   String
   filterConfig Json
-  isDefault   Boolean  @default(false)
-  isShared    Boolean  @default(false)
+  isDefault    Boolean @default(false)
+  isShared     Boolean @default(false)
 
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([userId, name, entityType])
   @@map("saved_filters")
@@ -963,17 +1018,17 @@ model SavedFilter {
 // ============================================
 
 model UserPreference {
-  id          String   @id @default(cuid())
+  id String @id @default(cuid())
 
-  userId      String   @unique
-  user        User     @relation(fields: [userId], references: [id])
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
 
   // UI Preferences
-  theme       String   @default("system")
-  language    String   @default("en")
-  timezone    String   @default("Asia/Ho_Chi_Minh")
-  dateFormat  String   @default("DD/MM/YYYY")
-  numberFormat String  @default("en-US")
+  theme        String @default("system")
+  language     String @default("en")
+  timezone     String @default("Asia/Ho_Chi_Minh")
+  dateFormat   String @default("DD/MM/YYYY")
+  numberFormat String @default("en-US")
 
   // Dashboard Preferences
   dashboardLayout Json?
@@ -985,11 +1040,11 @@ model UserPreference {
   pushNotifications    Boolean @default(true)
 
   // Table Preferences
-  tablePageSize Int     @default(20)
+  tablePageSize Int   @default(20)
   tableColumns  Json?
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("user_preferences")
 }
@@ -1008,7 +1063,7 @@ enum ReportType {
 }
 
 model Report {
-  id          String      @id @default(cuid())
+  id          String     @id @default(cuid())
   name        String
   description String?
   type        ReportType
@@ -1018,36 +1073,36 @@ model Report {
   lastRunAt     DateTime?
   lastRunStatus String?
 
-  isTemplate  Boolean     @default(false)
-  isShared    Boolean     @default(false)
+  isTemplate Boolean @default(false)
+  isShared   Boolean @default(false)
 
   createdById String
-  createdBy   User        @relation(fields: [createdById], references: [id])
+  createdBy   User   @relation(fields: [createdById], references: [id])
 
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  executions  ReportExecution[]
+  executions ReportExecution[]
 
   @@map("reports")
 }
 
 model ReportExecution {
-  id          String    @id @default(cuid())
+  id String @id @default(cuid())
 
-  reportId    String
-  report      Report    @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  reportId String
+  report   Report @relation(fields: [reportId], references: [id], onDelete: Cascade)
 
-  status      String
-  format      String
-  fileUrl     String?
-  fileSize    Int?
+  status   String
+  format   String
+  fileUrl  String?
+  fileSize Int?
 
-  parameters  Json?
+  parameters   Json?
   errorMessage String?
 
   executedById String
-  executedBy   User      @relation(fields: [executedById], references: [id])
+  executedBy   User   @relation(fields: [executedById], references: [id])
 
   startedAt   DateTime  @default(now())
   completedAt DateTime?
@@ -1060,29 +1115,29 @@ model ReportExecution {
 // ============================================
 
 model SearchIndex {
-  id          String   @id @default(cuid())
-  entityType  String
-  entityId    String
-  title       String
-  content     String   @db.Text
-  metadata    Json?
-  updatedAt   DateTime @updatedAt
+  id         String   @id @default(cuid())
+  entityType String
+  entityId   String
+  title      String
+  content    String   @db.Text
+  metadata   Json?
+  updatedAt  DateTime @updatedAt
 
   @@unique([entityType, entityId])
   @@map("search_index")
 }
 
 model RecentSearch {
-  id          String   @id @default(cuid())
+  id String @id @default(cuid())
 
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 
-  query       String
-  resultCount Int
+  query         String
+  resultCount   Int
   clickedResult String?
 
-  createdAt   DateTime @default(now())
+  createdAt DateTime @default(now())
 
   @@index([userId, createdAt])
   @@map("recent_searches")
@@ -1195,65 +1250,65 @@ enum WidgetType {
 
 // KPI Definition
 model KPIDefinition {
-  id              String          @id @default(cuid())
+  id String @id @default(cuid())
 
-  code            String          @unique
-  name            String
-  description     String?
-  category        KPICategory
+  code        String      @unique
+  name        String
+  description String?
+  category    KPICategory
 
   formula         String
   dataSource      String
   aggregationType AggregationType
 
-  unit            String?
-  format          String?
-  decimals        Int             @default(2)
+  unit     String?
+  format   String?
+  decimals Int     @default(2)
 
-  targetType      TargetType      @default(HIGHER_IS_BETTER)
-  warningThreshold Float?
+  targetType        TargetType @default(HIGHER_IS_BETTER)
+  warningThreshold  Float?
   criticalThreshold Float?
 
-  isActive        Boolean         @default(true)
-  isSystem        Boolean         @default(false)
+  isActive Boolean @default(true)
+  isSystem Boolean @default(false)
 
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  targets         KPITarget[]
-  values          KPIValue[]
-  alerts          KPIAlert[]
+  targets KPITarget[]
+  values  KPIValue[]
+  alerts  KPIAlert[]
 
   @@map("kpi_definitions")
 }
 
 // KPI Targets
 model KPITarget {
-  id              String          @id @default(cuid())
+  id String @id @default(cuid())
 
-  kpiId           String
-  kpi             KPIDefinition   @relation(fields: [kpiId], references: [id])
+  kpiId String
+  kpi   KPIDefinition @relation(fields: [kpiId], references: [id])
 
-  seasonId        String?
-  season          Season?         @relation(fields: [seasonId], references: [id])
-  brandId         String?
-  brand           Brand?          @relation(fields: [brandId], references: [id])
-  locationId      String?
-  location        SalesLocation?  @relation(fields: [locationId], references: [id])
+  seasonId   String?
+  season     Season?        @relation(fields: [seasonId], references: [id])
+  brandId    String?
+  brand      Brand?         @relation(fields: [brandId], references: [id])
+  locationId String?
+  location   SalesLocation? @relation(fields: [locationId], references: [id])
 
-  targetValue     Float
-  minValue        Float?
-  maxValue        Float?
-  stretchTarget   Float?
+  targetValue   Float
+  minValue      Float?
+  maxValue      Float?
+  stretchTarget Float?
 
-  periodType      PeriodType      @default(SEASON)
-  periodStart     DateTime?
-  periodEnd       DateTime?
+  periodType  PeriodType @default(SEASON)
+  periodStart DateTime?
+  periodEnd   DateTime?
 
-  createdById     String
-  createdBy       User            @relation(fields: [createdById], references: [id])
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
+  createdById String
+  createdBy   User     @relation(fields: [createdById], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@unique([kpiId, seasonId, brandId, locationId, periodType])
   @@map("kpi_targets")
@@ -1261,25 +1316,25 @@ model KPITarget {
 
 // KPI Values
 model KPIValue {
-  id              String          @id @default(cuid())
+  id String @id @default(cuid())
 
-  kpiId           String
-  kpi             KPIDefinition   @relation(fields: [kpiId], references: [id])
+  kpiId String
+  kpi   KPIDefinition @relation(fields: [kpiId], references: [id])
 
-  seasonId        String?
-  brandId         String?
-  locationId      String?
-  categoryId      String?
+  seasonId   String?
+  brandId    String?
+  locationId String?
+  categoryId String?
 
-  value           Float
-  previousValue   Float?
-  changePercent   Float?
+  value         Float
+  previousValue Float?
+  changePercent Float?
 
-  periodType      PeriodType
-  periodDate      DateTime
+  periodType PeriodType
+  periodDate DateTime
 
-  calculatedAt    DateTime        @default(now())
-  dataAsOf        DateTime
+  calculatedAt DateTime @default(now())
+  dataAsOf     DateTime
 
   @@unique([kpiId, seasonId, brandId, locationId, categoryId, periodType, periodDate])
   @@index([kpiId, periodDate])
@@ -1288,28 +1343,28 @@ model KPIValue {
 
 // KPI Alerts
 model KPIAlert {
-  id              String          @id @default(cuid())
+  id String @id @default(cuid())
 
-  kpiId           String
-  kpi             KPIDefinition   @relation(fields: [kpiId], references: [id])
+  kpiId String
+  kpi   KPIDefinition @relation(fields: [kpiId], references: [id])
 
-  alertType       AlertType
-  severity        AlertSeverity
+  alertType AlertType
+  severity  AlertSeverity
 
-  currentValue    Float
-  thresholdValue  Float
-  message         String
+  currentValue   Float
+  thresholdValue Float
+  message        String
 
-  seasonId        String?
-  brandId         String?
-  locationId      String?
+  seasonId   String?
+  brandId    String?
+  locationId String?
 
-  isAcknowledged  Boolean         @default(false)
+  isAcknowledged   Boolean   @default(false)
   acknowledgedById String?
-  acknowledgedBy  User?           @relation(fields: [acknowledgedById], references: [id])
-  acknowledgedAt  DateTime?
+  acknowledgedBy   User?     @relation(fields: [acknowledgedById], references: [id])
+  acknowledgedAt   DateTime?
 
-  createdAt       DateTime        @default(now())
+  createdAt DateTime @default(now())
 
   @@index([kpiId, createdAt])
   @@index([isAcknowledged])
@@ -1318,28 +1373,28 @@ model KPIAlert {
 
 // Forecasts
 model Forecast {
-  id              String          @id @default(cuid())
+  id String @id @default(cuid())
 
-  forecastType    ForecastType
-  modelUsed       String
+  forecastType ForecastType
+  modelUsed    String
 
-  seasonId        String
-  season          Season          @relation(fields: [seasonId], references: [id])
-  brandId         String?
-  brand           Brand?          @relation(fields: [brandId], references: [id])
-  categoryId      String?
-  category        Category?       @relation(fields: [categoryId], references: [id])
+  seasonId   String
+  season     Season    @relation(fields: [seasonId], references: [id])
+  brandId    String?
+  brand      Brand?    @relation(fields: [brandId], references: [id])
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id])
 
-  forecastData    Json
-  confidence      Float
-  accuracy        Json?
+  forecastData Json
+  confidence   Float
+  accuracy     Json?
 
-  generatedAt     DateTime        @default(now())
-  validUntil      DateTime
-  inputDataRange  Json
+  generatedAt    DateTime @default(now())
+  validUntil     DateTime
+  inputDataRange Json
 
-  createdById     String
-  createdBy       User            @relation(fields: [createdById], references: [id])
+  createdById String
+  createdBy   User   @relation(fields: [createdById], references: [id])
 
   @@index([seasonId, forecastType])
   @@map("forecasts")
@@ -1347,57 +1402,57 @@ model Forecast {
 
 // Scenarios (What-If)
 model Scenario {
-  id              String          @id @default(cuid())
+  id String @id @default(cuid())
 
-  name            String
-  description     String?
+  name        String
+  description String?
 
-  baseSeasonId    String
-  baseSeason      Season          @relation(fields: [baseSeasonId], references: [id])
-  baseBudgetId    String?
+  baseSeasonId String
+  baseSeason   Season  @relation(fields: [baseSeasonId], references: [id])
+  baseBudgetId String?
 
   parameters      Json
   impactSummary   Json
   detailedResults Json?
 
-  status          ScenarioStatus  @default(DRAFT)
+  status ScenarioStatus @default(DRAFT)
 
-  createdById     String
-  createdBy       User            @relation(fields: [createdById], references: [id])
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
+  createdById String
+  createdBy   User     @relation(fields: [createdById], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@map("scenarios")
 }
 
 // AI Insights
 model AIInsight {
-  id              String          @id @default(cuid())
+  id String @id @default(cuid())
 
-  insightType     InsightType
-  category        String
+  insightType InsightType
+  category    String
 
-  title           String
-  description     String          @db.Text
+  title       String
+  description String @db.Text
 
-  impactLevel     ImpactLevel
-  confidence      Float
+  impactLevel ImpactLevel
+  confidence  Float
 
-  dataContext     Json
+  dataContext      Json
   affectedEntities Json?
 
   recommendations Json?
 
-  status          InsightStatus   @default(NEW)
-  viewedAt        DateTime?
-  actionTakenAt   DateTime?
-  dismissedAt     DateTime?
+  status        InsightStatus @default(NEW)
+  viewedAt      DateTime?
+  actionTakenAt DateTime?
+  dismissedAt   DateTime?
 
-  userId          String?
-  user            User?           @relation(fields: [userId], references: [id])
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
 
-  generatedAt     DateTime        @default(now())
-  expiresAt       DateTime?
+  generatedAt DateTime  @default(now())
+  expiresAt   DateTime?
 
   @@index([insightType, status])
   @@index([userId, generatedAt])
@@ -1406,25 +1461,25 @@ model AIInsight {
 
 // Dashboard Widgets
 model DashboardWidget {
-  id              String          @id @default(cuid())
+  id String @id @default(cuid())
 
-  userId          String
-  user            User            @relation(fields: [userId], references: [id])
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 
-  widgetType      WidgetType
-  title           String
+  widgetType WidgetType
+  title      String
 
-  gridX           Int
-  gridY           Int
-  width           Int             @default(1)
-  height          Int             @default(1)
+  gridX  Int
+  gridY  Int
+  width  Int @default(1)
+  height Int @default(1)
 
-  config          Json
+  config Json
 
-  isVisible       Boolean         @default(true)
+  isVisible Boolean @default(true)
 
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([userId])
   @@map("dashboard_widgets")
@@ -1436,24 +1491,24 @@ model DashboardWidget {
 
 // AI Chat Conversation Sessions
 model AIConversation {
-  id              String          @id @default(cuid())
+  id String @id @default(cuid())
 
-  title           String?
-  summary         String?         @db.Text
+  title   String?
+  summary String? @db.Text
 
-  userId          String
-  user            User            @relation(fields: [userId], references: [id])
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 
-  messages        AIMessage[]
+  messages AIMessage[]
 
-  context         Json?           // Page context, entity context
-  metadata        Json?           // Token usage, model info
+  context  Json? // Page context, entity context
+  metadata Json? // Token usage, model info
 
-  isArchived      Boolean         @default(false)
+  isArchived Boolean @default(false)
 
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-  lastMessageAt   DateTime        @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  lastMessageAt DateTime @default(now())
 
   @@index([userId, lastMessageAt])
   @@index([userId, isArchived])
@@ -1462,28 +1517,28 @@ model AIConversation {
 
 // AI Chat Messages
 model AIMessage {
-  id              String          @id @default(cuid())
+  id String @id @default(cuid())
 
-  conversationId  String
-  conversation    AIConversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  conversationId String
+  conversation   AIConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
-  role            AIMessageRole
-  content         String          @db.Text
+  role    AIMessageRole
+  content String        @db.Text
 
   // Tool calls
-  toolCalls       Json?           // Array of tool calls made
-  toolResults     Json?           // Results from tool executions
+  toolCalls   Json? // Array of tool calls made
+  toolResults Json? // Results from tool executions
 
   // Metadata
-  tokenCount      Int?
-  latencyMs       Int?
-  model           String?
+  tokenCount Int?
+  latencyMs  Int?
+  model      String?
 
   // Feedback
-  rating          Int?            // 1-5 rating
-  feedback        String?
+  rating   Int? // 1-5 rating
+  feedback String?
 
-  createdAt       DateTime        @default(now())
+  createdAt DateTime @default(now())
 
   @@index([conversationId, createdAt])
   @@map("ai_messages")
@@ -1491,45 +1546,45 @@ model AIMessage {
 
 // AI-Generated Suggestions
 model AISuggestion {
-  id              String              @id @default(cuid())
+  id String @id @default(cuid())
 
-  type            AISuggestionType
-  title           String
-  description     String              @db.Text
+  type        AISuggestionType
+  title       String
+  description String           @db.Text
 
   // Confidence and priority
-  confidence      Float               // 0-1 score
-  priority        SuggestionPriority  @default(MEDIUM)
-  impact          ImpactLevel         @default(MEDIUM)
+  confidence Float // 0-1 score
+  priority   SuggestionPriority @default(MEDIUM)
+  impact     ImpactLevel        @default(MEDIUM)
 
   // Related entities
-  seasonId        String?
-  season          Season?             @relation(fields: [seasonId], references: [id])
+  seasonId String?
+  season   Season? @relation(fields: [seasonId], references: [id])
 
-  brandId         String?
-  brand           Brand?              @relation(fields: [brandId], references: [id])
+  brandId String?
+  brand   Brand?  @relation(fields: [brandId], references: [id])
 
-  categoryId      String?
-  category        Category?           @relation(fields: [categoryId], references: [id])
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id])
 
   // Suggestion data
-  data            Json                // Structured suggestion data (SKUs, quantities, etc.)
-  reasoning       String?             @db.Text
-  metrics         Json?               // Projected impact metrics
+  data      Json // Structured suggestion data (SKUs, quantities, etc.)
+  reasoning String? @db.Text
+  metrics   Json? // Projected impact metrics
 
   // Status
-  status          SuggestionStatus    @default(PENDING)
-  reviewedById    String?
-  reviewedAt      DateTime?
-  reviewNotes     String?
+  status       SuggestionStatus @default(PENDING)
+  reviewedById String?
+  reviewedAt   DateTime?
+  reviewNotes  String?
 
   // User who received suggestion
-  userId          String
-  user            User                @relation(fields: [userId], references: [id])
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 
-  createdAt       DateTime            @default(now())
-  updatedAt       DateTime            @updatedAt
-  expiresAt       DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  expiresAt DateTime?
 
   @@index([userId, status])
   @@index([type, status])
@@ -1539,40 +1594,40 @@ model AISuggestion {
 
 // AI-Generated OTB/Budget Plans
 model AIGeneratedPlan {
-  id              String              @id @default(cuid())
+  id String @id @default(cuid())
 
-  type            GeneratedPlanType
-  name            String
-  description     String?             @db.Text
+  type        GeneratedPlanType
+  name        String
+  description String?           @db.Text
 
   // Context
-  seasonId        String?
-  season          Season?             @relation(fields: [seasonId], references: [id])
+  seasonId String?
+  season   Season? @relation(fields: [seasonId], references: [id])
 
-  brandId         String?
-  brand           Brand?              @relation(fields: [brandId], references: [id])
+  brandId String?
+  brand   Brand?  @relation(fields: [brandId], references: [id])
 
   // Plan data
-  planData        Json                // Full plan details
-  assumptions     Json?               // Assumptions used
-  historicalBasis Json?               // Historical data used
+  planData        Json // Full plan details
+  assumptions     Json? // Assumptions used
+  historicalBasis Json? // Historical data used
 
   // Metrics
-  projectedRevenue    Decimal?        @db.Decimal(15, 2)
-  projectedMargin     Decimal?        @db.Decimal(5, 2)
-  confidenceScore     Float?
+  projectedRevenue Decimal? @db.Decimal(15, 2)
+  projectedMargin  Decimal? @db.Decimal(5, 2)
+  confidenceScore  Float?
 
   // Status
-  status          GeneratedPlanStatus @default(DRAFT)
-  appliedAt       DateTime?
-  appliedToId     String?             // ID of OTBPlan or Budget created
+  status      GeneratedPlanStatus @default(DRAFT)
+  appliedAt   DateTime?
+  appliedToId String? // ID of OTBPlan or Budget created
 
   // User
-  userId          String
-  user            User                @relation(fields: [userId], references: [id])
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 
-  createdAt       DateTime            @default(now())
-  updatedAt       DateTime            @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([userId, status])
   @@index([seasonId, brandId])
@@ -1581,50 +1636,50 @@ model AIGeneratedPlan {
 
 // Predictive Alerts
 model PredictiveAlert {
-  id              String              @id @default(cuid())
+  id String @id @default(cuid())
 
-  type            PredictiveAlertType
-  severity        AlertSeverity       @default(WARNING)
+  type     PredictiveAlertType
+  severity AlertSeverity       @default(WARNING)
 
-  title           String
-  description     String              @db.Text
+  title       String
+  description String @db.Text
 
   // Prediction details
-  predictedDate   DateTime?           // When the issue is predicted to occur
-  probability     Float               // 0-1 probability
-  timeframe       String?             // e.g., "7 days", "2 weeks"
+  predictedDate DateTime? // When the issue is predicted to occur
+  probability   Float // 0-1 probability
+  timeframe     String? // e.g., "7 days", "2 weeks"
 
   // Related entities
-  seasonId        String?
-  season          Season?             @relation(fields: [seasonId], references: [id])
+  seasonId String?
+  season   Season? @relation(fields: [seasonId], references: [id])
 
-  brandId         String?
-  brand           Brand?              @relation(fields: [brandId], references: [id])
+  brandId String?
+  brand   Brand?  @relation(fields: [brandId], references: [id])
 
-  categoryId      String?
-  category        Category?           @relation(fields: [categoryId], references: [id])
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id])
 
-  skuId           String?
+  skuId String?
 
   // Alert data
-  data            Json                // Detailed prediction data
-  recommendations Json?               // Suggested actions
-  metrics         Json?               // Current vs predicted metrics
+  data            Json // Detailed prediction data
+  recommendations Json? // Suggested actions
+  metrics         Json? // Current vs predicted metrics
 
   // Status
-  status          PredictiveAlertStatus @default(ACTIVE)
+  status           PredictiveAlertStatus @default(ACTIVE)
   acknowledgedById String?
-  acknowledgedAt  DateTime?
-  resolvedAt      DateTime?
-  resolutionNotes String?
+  acknowledgedAt   DateTime?
+  resolvedAt       DateTime?
+  resolutionNotes  String?
 
   // User assignment
-  userId          String?
-  user            User?               @relation(fields: [userId], references: [id])
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
 
-  createdAt       DateTime            @default(now())
-  updatedAt       DateTime            @updatedAt
-  expiresAt       DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  expiresAt DateTime?
 
   @@index([type, status])
   @@index([severity, status])
@@ -1645,12 +1700,12 @@ enum AIMessageRole {
 }
 
 enum AISuggestionType {
-  BUY_RECOMMENDATION      // Suggest purchases
+  BUY_RECOMMENDATION // Suggest purchases
   MARKDOWN_RECOMMENDATION // Suggest markdowns
   TRANSFER_RECOMMENDATION // Suggest inventory transfers
-  REORDER_RECOMMENDATION  // Suggest reorders
-  CANCEL_RECOMMENDATION   // Suggest order cancellations
-  PRICING_RECOMMENDATION  // Suggest price changes
+  REORDER_RECOMMENDATION // Suggest reorders
+  CANCEL_RECOMMENDATION // Suggest order cancellations
+  PRICING_RECOMMENDATION // Suggest price changes
 }
 
 enum SuggestionPriority {
@@ -1685,14 +1740,14 @@ enum GeneratedPlanStatus {
 }
 
 enum PredictiveAlertType {
-  STOCKOUT_RISK           // Risk of running out of stock
-  OVERSTOCK_RISK          // Risk of excess inventory
-  MARGIN_DECLINE          // Projected margin decrease
-  TREND_REVERSAL          // Sales trend changing direction
-  DEMAND_SPIKE            // Unexpected demand increase
-  SLOW_MOVING             // Items becoming slow sellers
-  SEASON_END_RISK         // End of season inventory risk
-  BUDGET_OVERRUN          // Budget likely to be exceeded
+  STOCKOUT_RISK // Risk of running out of stock
+  OVERSTOCK_RISK // Risk of excess inventory
+  MARGIN_DECLINE // Projected margin decrease
+  TREND_REVERSAL // Sales trend changing direction
+  DEMAND_SPIKE // Unexpected demand increase
+  SLOW_MOVING // Items becoming slow sellers
+  SEASON_END_RISK // End of season inventory risk
+  BUDGET_OVERRUN // Budget likely to be exceeded
 }
 
 enum PredictiveAlertStatus {
@@ -1795,61 +1850,61 @@ model Account {
 
 // SSO Configuration
 model SSOConfig {
-  id              String      @id @default(cuid())
+  id String @id @default(cuid())
 
-  provider        SSOProvider
-  name            String
+  provider SSOProvider
+  name     String
 
   // OAuth Config
-  clientId        String?
-  clientSecret    String?     @db.Text
+  clientId     String?
+  clientSecret String? @db.Text
 
   // SAML Config
-  entryPoint      String?
-  issuer          String?
-  certificate     String?     @db.Text
+  entryPoint  String?
+  issuer      String?
+  certificate String? @db.Text
 
   // Settings
-  isEnabled       Boolean     @default(false)
-  autoProvision   Boolean     @default(true)
-  defaultRole     UserRole    @default(BRAND_PLANNER)
+  isEnabled     Boolean  @default(false)
+  autoProvision Boolean  @default(true)
+  defaultRole   UserRole @default(BRAND_PLANNER)
 
   // Domain restriction
-  allowedDomains  String[]
+  allowedDomains String[]
 
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("sso_configs")
 }
 
 // File Storage
 model StoredFile {
-  id              String       @id @default(cuid())
+  id String @id @default(cuid())
 
-  filename        String
-  originalName    String
-  mimeType        String
-  size            Int
+  filename     String
+  originalName String
+  mimeType     String
+  size         Int
 
   // S3 location
-  bucket          String
-  key             String
-  region          String
+  bucket String
+  key    String
+  region String
 
   // Metadata
-  category        FileCategory
-  entityType      String?
-  entityId        String?
+  category   FileCategory
+  entityType String?
+  entityId   String?
 
   // Access
-  isPublic        Boolean      @default(false)
-  expiresAt       DateTime?
+  isPublic  Boolean   @default(false)
+  expiresAt DateTime?
 
-  uploadedById    String
-  uploadedBy      User         @relation(fields: [uploadedById], references: [id])
+  uploadedById String
+  uploadedBy   User   @relation(fields: [uploadedById], references: [id])
 
-  createdAt       DateTime     @default(now())
+  createdAt DateTime @default(now())
 
   @@index([entityType, entityId])
   @@index([uploadedById])
@@ -1858,50 +1913,50 @@ model StoredFile {
 
 // ERP Connection
 model ERPConnection {
-  id              String          @id @default(cuid())
+  id String @id @default(cuid())
 
-  name            String
-  type            ERPType
+  name String
+  type ERPType
 
   // Connection details (encrypted)
-  host            String
-  port            Int?
-  database        String?
-  username        String?
-  password        String?         @db.Text
-  apiKey          String?         @db.Text
+  host     String
+  port     Int?
+  database String?
+  username String?
+  password String? @db.Text
+  apiKey   String? @db.Text
 
   // Settings
-  isEnabled       Boolean         @default(false)
-  syncDirection   SyncDirection   @default(BIDIRECTIONAL)
+  isEnabled     Boolean       @default(false)
+  syncDirection SyncDirection @default(BIDIRECTIONAL)
 
   // Last sync info
-  lastSyncAt      DateTime?
-  lastSyncStatus  SyncStatus?
+  lastSyncAt     DateTime?
+  lastSyncStatus SyncStatus?
 
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  syncLogs        ERPSyncLog[]
-  fieldMappings   ERPFieldMapping[]
+  syncLogs      ERPSyncLog[]
+  fieldMappings ERPFieldMapping[]
 
   @@map("erp_connections")
 }
 
 // ERP Field Mapping
 model ERPFieldMapping {
-  id              String        @id @default(cuid())
+  id String @id @default(cuid())
 
-  connectionId    String
-  connection      ERPConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  connectionId String
+  connection   ERPConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
 
-  entityType      String
-  sourceField     String
-  targetField     String
+  entityType  String
+  sourceField String
+  targetField String
 
-  transformation  String?
-  defaultValue    String?
-  isRequired      Boolean       @default(false)
+  transformation String?
+  defaultValue   String?
+  isRequired     Boolean @default(false)
 
   @@unique([connectionId, entityType, sourceField])
   @@map("erp_field_mappings")
@@ -1909,28 +1964,28 @@ model ERPFieldMapping {
 
 // ERP Sync Log
 model ERPSyncLog {
-  id              String        @id @default(cuid())
+  id String @id @default(cuid())
 
-  connectionId    String
-  connection      ERPConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  connectionId String
+  connection   ERPConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
 
-  syncType        String
-  entityType      String
-  direction       SyncDirection
+  syncType   String
+  entityType String
+  direction  SyncDirection
 
-  status          SyncStatus
+  status SyncStatus
 
-  recordsTotal    Int           @default(0)
-  recordsSuccess  Int           @default(0)
-  recordsFailed   Int           @default(0)
+  recordsTotal   Int @default(0)
+  recordsSuccess Int @default(0)
+  recordsFailed  Int @default(0)
 
-  errors          Json?
+  errors Json?
 
-  startedAt       DateTime
-  completedAt     DateTime?
+  startedAt   DateTime
+  completedAt DateTime?
 
-  triggeredById   String?
-  triggeredBy     User?         @relation(fields: [triggeredById], references: [id])
+  triggeredById String?
+  triggeredBy   User?   @relation(fields: [triggeredById], references: [id])
 
   @@index([connectionId, startedAt])
   @@map("erp_sync_logs")
@@ -1938,58 +1993,58 @@ model ERPSyncLog {
 
 // Webhooks
 model Webhook {
-  id              String        @id @default(cuid())
+  id String @id @default(cuid())
 
-  name            String
-  url             String
+  name String
+  url  String
 
   // Authentication
-  secret          String
-  headers         Json?
+  secret  String
+  headers Json?
 
   // Events
-  events          String[]
+  events String[]
 
   // Settings
-  isEnabled       Boolean       @default(true)
-  retryCount      Int           @default(3)
-  timeoutSeconds  Int           @default(30)
+  isEnabled      Boolean @default(true)
+  retryCount     Int     @default(3)
+  timeoutSeconds Int     @default(30)
 
   // Stats
   lastTriggeredAt DateTime?
-  successCount    Int           @default(0)
-  failureCount    Int           @default(0)
+  successCount    Int       @default(0)
+  failureCount    Int       @default(0)
 
-  createdById     String
-  createdBy       User          @relation(fields: [createdById], references: [id])
+  createdById String
+  createdBy   User   @relation(fields: [createdById], references: [id])
 
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  deliveries      WebhookDelivery[]
+  deliveries WebhookDelivery[]
 
   @@map("webhooks")
 }
 
 // Webhook Delivery Log
 model WebhookDelivery {
-  id              String         @id @default(cuid())
+  id String @id @default(cuid())
 
-  webhookId       String
-  webhook         Webhook        @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+  webhookId String
+  webhook   Webhook @relation(fields: [webhookId], references: [id], onDelete: Cascade)
 
-  event           String
-  payload         Json
+  event   String
+  payload Json
 
   // Response
-  statusCode      Int?
-  responseBody    String?        @db.Text
-  responseTime    Int?
+  statusCode   Int?
+  responseBody String? @db.Text
+  responseTime Int?
 
-  status          DeliveryStatus
-  attempts        Int            @default(1)
+  status   DeliveryStatus
+  attempts Int            @default(1)
 
-  createdAt       DateTime       @default(now())
+  createdAt DateTime @default(now())
 
   @@index([webhookId, createdAt])
   @@map("webhook_deliveries")
@@ -1997,55 +2052,55 @@ model WebhookDelivery {
 
 // API Keys
 model APIKey {
-  id              String        @id @default(cuid())
+  id String @id @default(cuid())
 
-  name            String
-  key             String        @unique
-  prefix          String
+  name   String
+  key    String @unique
+  prefix String
 
   // Permissions
-  scopes          String[]
+  scopes String[]
 
   // Limits
-  rateLimit       Int           @default(1000)
+  rateLimit Int @default(1000)
 
   // Stats
-  lastUsedAt      DateTime?
-  usageCount      Int           @default(0)
+  lastUsedAt DateTime?
+  usageCount Int       @default(0)
 
   // Ownership
-  createdById     String
-  createdBy       User          @relation(fields: [createdById], references: [id])
+  createdById String
+  createdBy   User   @relation(fields: [createdById], references: [id])
 
-  isEnabled       Boolean       @default(true)
-  expiresAt       DateTime?
+  isEnabled Boolean   @default(true)
+  expiresAt DateTime?
 
-  createdAt       DateTime      @default(now())
+  createdAt DateTime @default(now())
 
   @@map("api_keys")
 }
 
 // Real-time Notifications
 model RealtimeNotification {
-  id              String                    @id @default(cuid())
+  id String @id @default(cuid())
 
-  userId          String
-  user            User                      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  type            RealtimeNotificationType
-  title           String
-  message         String
+  type    RealtimeNotificationType
+  title   String
+  message String
 
   // Link to entity
-  entityType      String?
-  entityId        String?
-  actionUrl       String?
+  entityType String?
+  entityId   String?
+  actionUrl  String?
 
   // Status
-  isRead          Boolean                   @default(false)
-  readAt          DateTime?
+  isRead Boolean   @default(false)
+  readAt DateTime?
 
-  createdAt       DateTime                  @default(now())
+  createdAt DateTime @default(now())
 
   @@index([userId, isRead, createdAt])
   @@map("realtime_notifications")
@@ -2056,21 +2111,21 @@ model RealtimeNotification {
 // ============================================
 
 model AutomationRule {
-  id                  String    @id @default(cuid())
+  id String @id @default(cuid())
 
   // Basic info
-  name                String
-  description         String?   @db.Text
-  type                String    // AUTO_APPROVE_BUDGET, AUTO_APPROVE_OTB, AUTO_APPROVE_SKU, AUTO_REORDER, AUTO_ESCALATE, AUTO_NOTIFY
+  name        String
+  description String? @db.Text
+  type        String // AUTO_APPROVE_BUDGET, AUTO_APPROVE_OTB, AUTO_APPROVE_SKU, AUTO_REORDER, AUTO_ESCALATE, AUTO_NOTIFY
 
   // Rule configuration
-  enabled             Boolean   @default(true)
-  priority            Int       @default(10)
+  enabled  Boolean @default(true)
+  priority Int     @default(10)
 
   // Conditions & Actions (stored as JSON)
-  conditions          Json      // Array of RuleCondition
-  conditionLogic      String    @default("AND") // AND | OR
-  actions             Json      // Array of RuleAction
+  conditions     Json // Array of RuleCondition
+  conditionLogic String @default("AND") // AND | OR
+  actions        Json // Array of RuleAction
 
   // Execution limits
   cooldownMinutes     Int?
@@ -2079,12 +2134,938 @@ model AutomationRule {
   executionCount      Int       @default(0)
 
   // Ownership
-  createdById         String
-  createdBy           User      @relation("AutomationRuleCreatedBy", fields: [createdById], references: [id])
+  createdById String
+  createdBy   User   @relation("AutomationRuleCreatedBy", fields: [createdById], references: [id])
 
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([type, enabled])
   @@map("automation_rules")
+}
+
+// ============================================
+// WSSI - WEEKLY SALES STOCK INTAKE
+// ============================================
+
+model WSSIRecord {
+  id String @id @default(cuid())
+
+  // Time Dimension
+  year          Int
+  weekNumber    Int // 1-52
+  weekStartDate DateTime
+  weekEndDate   DateTime
+
+  // Hierarchy Dimension
+  divisionId    String
+  division      Division       @relation(fields: [divisionId], references: [id])
+  brandId       String
+  brand         Brand          @relation("WSSIBrand", fields: [brandId], references: [id])
+  categoryId    String?
+  category      Category?      @relation("WSSICategory", fields: [categoryId], references: [id])
+  subcategoryId String?
+  subcategory   Subcategory?   @relation("WSSISubcategory", fields: [subcategoryId], references: [id])
+  seasonId      String
+  season        Season         @relation("WSSISeason", fields: [seasonId], references: [id])
+  locationId    String?
+  location      SalesLocation? @relation("WSSILocation", fields: [locationId], references: [id])
+
+  // Stock Metrics (Value)
+  openingStockValue Decimal @default(0) @db.Decimal(18, 2)
+  closingStockValue Decimal @default(0) @db.Decimal(18, 2)
+
+  // Stock Metrics (Units)
+  openingStockUnits Int @default(0)
+  closingStockUnits Int @default(0)
+
+  // Sales Plan
+  salesPlanValue Decimal @default(0) @db.Decimal(18, 2)
+  salesPlanUnits Int     @default(0)
+
+  // Sales Actual
+  salesActualValue Decimal @default(0) @db.Decimal(18, 2)
+  salesActualUnits Int     @default(0)
+
+  // Intake Plan
+  intakePlanValue Decimal @default(0) @db.Decimal(18, 2)
+  intakePlanUnits Int     @default(0)
+
+  // Intake Actual
+  intakeActualValue Decimal @default(0) @db.Decimal(18, 2)
+  intakeActualUnits Int     @default(0)
+
+  // Markdown
+  markdownPlanValue   Decimal? @db.Decimal(18, 2)
+  markdownActualValue Decimal? @db.Decimal(18, 2)
+
+  // Calculated Metrics (stored for query performance)
+  weeksOfCover      Decimal @default(0) @db.Decimal(5, 2) // Stock / Weekly Sales
+  salesVariancePct  Decimal @default(0) @db.Decimal(5, 2) // (Actual-Plan)/Plan * 100
+  intakeVariancePct Decimal @default(0) @db.Decimal(5, 2)
+  sellThroughPct    Decimal @default(0) @db.Decimal(5, 2) // Sales / (Open+Intake) * 100
+
+  // Forecast Type
+  forecastType     WSSIForecastType @default(PLAN)
+  reforecastedAt   DateTime?
+  reforecastedById String?
+  reforecastedBy   User?            @relation("WSSIReforecaster", fields: [reforecastedById], references: [id])
+  reforecastReason String?
+
+  // Alerts relation
+  alerts WSSIAlert[]
+
+  // Audit
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdById String?
+  createdBy   User?    @relation("WSSICreator", fields: [createdById], references: [id])
+
+  @@unique([year, weekNumber, divisionId, brandId, categoryId, subcategoryId, seasonId, locationId])
+  @@index([year, weekNumber])
+  @@index([brandId])
+  @@index([seasonId])
+  @@index([forecastType])
+  @@map("wssi_records")
+}
+
+enum WSSIForecastType {
+  PLAN // Original plan
+  REFORECAST // Updated forecast mid-season
+  ACTUAL // Actual recorded data
+}
+
+model WSSIAlert {
+  id String @id @default(cuid())
+
+  wssiRecordId String
+  wssiRecord   WSSIRecord @relation(fields: [wssiRecordId], references: [id], onDelete: Cascade)
+
+  alertType WSSIAlertType
+  severity  AlertSeverity
+
+  // Threshold Info
+  thresholdValue Decimal @db.Decimal(10, 2)
+  actualValue    Decimal @db.Decimal(10, 2)
+
+  // Message
+  title          String
+  message        String
+  recommendation String?
+
+  // Resolution
+  isAcknowledged   Boolean   @default(false)
+  acknowledgedById String?
+  acknowledgedBy   User?     @relation("WSSIAlertAcknowledger", fields: [acknowledgedById], references: [id])
+  acknowledgedAt   DateTime?
+  resolutionNotes  String?
+
+  createdAt DateTime @default(now())
+
+  @@index([severity])
+  @@index([isAcknowledged])
+  @@index([alertType])
+  @@map("wssi_alerts")
+}
+
+enum WSSIAlertType {
+  LOW_STOCK // WoC below minimum threshold
+  HIGH_STOCK // WoC above maximum threshold
+  SALES_BELOW_PLAN // Negative sales variance
+  SALES_ABOVE_PLAN // Positive variance (may need more stock)
+  INTAKE_DELAYED // Intake not arrived as planned
+  STOCKOUT_RISK // Projected stockout
+  MARKDOWN_NEEDED // High stock + season ending
+}
+
+// ============================================
+// WSSI CONFIGURATION
+// ============================================
+
+model WSSIThreshold {
+  id String @id @default(cuid())
+
+  // Scope (can be global or specific)
+  divisionId String?
+  division   Division? @relation(fields: [divisionId], references: [id])
+  brandId    String?
+  brand      Brand?    @relation("WSSIThresholdBrand", fields: [brandId], references: [id])
+  categoryId String?
+  category   Category? @relation("WSSIThresholdCategory", fields: [categoryId], references: [id])
+
+  // Threshold Values
+  wocMinimum Decimal @default(3.0) @db.Decimal(5, 2) // Weeks of Cover min
+  wocMaximum Decimal @default(8.0) @db.Decimal(5, 2) // Weeks of Cover max
+  wocTarget  Decimal @default(5.0) @db.Decimal(5, 2) // Optimal WoC
+
+  salesVarianceAlert Decimal @default(10.0) @db.Decimal(5, 2) // Alert if variance > X%
+
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([divisionId, brandId, categoryId])
+  @@map("wssi_thresholds")
+}
+
+// ============================================
+// BUDGET CHANGE LOG
+// ============================================
+
+model BudgetChangeLog {
+  id String @id @default(cuid())
+
+  budgetId String
+  budget   BudgetAllocation @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+
+  fieldName    String
+  oldValue     String?
+  newValue     String?
+  changeReason String
+
+  changedById String
+  changedBy   User     @relation("BudgetChangeLogUser", fields: [changedById], references: [id])
+  changedAt   DateTime @default(now())
+
+  @@index([budgetId])
+  @@index([changedAt])
+  @@map("budget_change_logs")
+}
+
+// ============================================
+// OTB PLAN VERSION CONTROL
+// ============================================
+
+model OTBPlanVersion {
+  id String @id @default(cuid())
+
+  otbPlanId String
+  otbPlan   OTBPlan @relation(fields: [otbPlanId], references: [id], onDelete: Cascade)
+
+  // Version Info
+  versionNumber Int // 1, 2, 3, 4, 5
+  versionType   OTBPlanVersionType
+
+  // Snapshot of plan data at this version
+  snapshotData Json // Full plan data as JSON
+
+  // Summary metrics for quick comparison
+  totalOTBValue Decimal @db.Decimal(18, 2)
+  totalOTBUnits Int
+
+  // Status
+  status OTBPlanVersionStatus @default(DRAFT)
+
+  // Approval
+  submittedAt   DateTime?
+  submittedById String?
+  submittedBy   User?     @relation("OTBVersionSubmitter", fields: [submittedById], references: [id])
+
+  approvedAt       DateTime?
+  approvedById     String?
+  approvedBy       User?     @relation("OTBVersionApprover", fields: [approvedById], references: [id])
+  approvalComments String?
+
+  // Changes from previous version
+  changes OTBVersionChange[]
+
+  // Audit
+  createdAt   DateTime @default(now())
+  createdById String
+  createdBy   User     @relation("OTBVersionCreator", fields: [createdById], references: [id])
+
+  @@unique([otbPlanId, versionNumber])
+  @@index([versionType])
+  @@index([status])
+  @@map("otb_plan_versions")
+}
+
+enum OTBPlanVersionType {
+  SYSTEM_PROPOSED // V1: Auto-calculated from historical data
+  USER_ADJUSTED // V2: Brand manager adjustments
+  FINANCE_REVIEWED // V3: Finance review & comments
+  BOD_APPROVED // V4: Final BOD approval
+  BRAND_CONSENSUS // V5: Optional brand alignment
+}
+
+enum OTBPlanVersionStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+  SUPERSEDED // When newer version exists
+}
+
+model OTBVersionChange {
+  id String @id @default(cuid())
+
+  versionId String
+  version   OTBPlanVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
+
+  // What changed
+  entityType String // "LINE_ITEM", "CATEGORY", "TOTAL"
+  entityId   String? // ID of the changed entity
+  fieldName  String // "otbPercent", "otbValue", etc.
+
+  previousValue String?
+  newValue      String?
+
+  // Why it changed
+  changeReason String
+
+  changedAt DateTime @default(now())
+
+  @@index([versionId])
+  @@map("otb_version_changes")
+}
+
+// ============================================
+// SIZE PROFILE (Prepare for Phase 2)
+// ============================================
+
+model SizeDefinition {
+  id String @id @default(cuid())
+
+  sizeCode  String   @unique // "XS", "S", "M", "L", "XL", "XXL"
+  sizeName  String // "Extra Small", "Small", etc.
+  sizeOrder Int // For sorting: 1, 2, 3, 4, 5, 6
+  sizeType  SizeType
+
+  // Numeric equivalents (optional)
+  numericEquivalent String? // "36", "38", etc.
+
+  isActive Boolean @default(true)
+
+  profiles SizeProfileItem[]
+
+  @@map("size_definitions")
+}
+
+enum SizeType {
+  ALPHA // XS, S, M, L, XL, XXL
+  NUMERIC // 36, 38, 40, 42
+  WAIST // 28, 30, 32, 34
+  SHOE // 38, 39, 40, 41, 42
+  ONE_SIZE // OS
+}
+
+model SizeProfile {
+  id String @id @default(cuid())
+
+  // Dimension
+  categoryId    String
+  category      Category       @relation("SizeProfileCategory", fields: [categoryId], references: [id])
+  subcategoryId String?
+  subcategory   Subcategory?   @relation("SizeProfileSubcategory", fields: [subcategoryId], references: [id])
+  genderId      String?
+  seasonId      String?
+  season        Season?        @relation("SizeProfileSeason", fields: [seasonId], references: [id])
+  locationId    String?
+  location      SalesLocation? @relation("SizeProfileLocation", fields: [locationId], references: [id])
+
+  // Profile Type
+  profileType SizeProfileType @default(HISTORICAL)
+
+  // Profile Items
+  items SizeProfileItem[]
+
+  // Metadata
+  basedOnUnits    Int? // Sample size
+  confidenceScore Decimal? @db.Decimal(3, 2) // 0.00 - 1.00
+
+  // Audit
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdById String?
+  createdBy   User?    @relation("SizeProfileCreator", fields: [createdById], references: [id])
+
+  @@unique([categoryId, subcategoryId, genderId, seasonId, locationId, profileType])
+  @@map("size_profiles")
+}
+
+enum SizeProfileType {
+  HISTORICAL // Based on last year sales
+  CURRENT_TREND // Based on current season
+  SYSTEM_OPTIMAL // AI recommended
+  USER_ADJUSTED // Manual adjustment
+  FINAL // Approved for use
+}
+
+model SizeProfileItem {
+  id String @id @default(cuid())
+
+  profileId String
+  profile   SizeProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  sizeId String
+  size   SizeDefinition @relation(fields: [sizeId], references: [id])
+
+  percentageShare Decimal @db.Decimal(5, 2) // 0-100%
+
+  @@unique([profileId, sizeId])
+  @@map("size_profile_items")
+}
+
+// ============================================
+// CLEARANCE OPTIMIZATION ENGINE (COE)
+// ============================================
+
+enum MarkdownPlanStatus {
+  DRAFT
+  ANALYZING
+  OPTIMIZED
+  APPROVED
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum MarkdownPhaseStatus {
+  PENDING
+  ACTIVE
+  COMPLETED
+}
+
+enum MarkdownAction {
+  MARKDOWN
+  TRANSFER
+  BUNDLE
+  PROMOTE
+  DISCONTINUE
+  HOLD
+}
+
+enum MarkdownUrgency {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+model MarkdownPlan {
+  id String @id @default(cuid())
+
+  // Basic Info
+  name        String
+  description String? @db.Text
+
+  // Context
+  seasonId String
+  brandId  String?
+
+  // Plan Dates
+  startDate DateTime
+  endDate   DateTime
+
+  // Status
+  status MarkdownPlanStatus @default(DRAFT)
+
+  // Financial Targets
+  targetRecoveryValue   Decimal @db.Decimal(18, 2)
+  targetSellThroughPct  Decimal @db.Decimal(5, 2)
+  maxMarkdownPct        Decimal @db.Decimal(5, 2) @default(70)
+
+  // AI Analysis
+  aiOptimizedAt     DateTime?
+  aiConfidenceScore Decimal? @db.Decimal(3, 2)
+  aiRecommendations Json?
+
+  // Results Summary
+  totalSKUs           Int     @default(0)
+  totalCurrentValue   Decimal @default(0) @db.Decimal(18, 2)
+  projectedRecovery   Decimal @default(0) @db.Decimal(18, 2)
+  projectedMarginLoss Decimal @default(0) @db.Decimal(18, 2)
+
+  // Phases
+  phases MarkdownPhase[]
+
+  // SKU Plans
+  skuPlans MarkdownSKUPlan[]
+
+  // Results
+  results MarkdownResult[]
+
+  // Audit
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdById String?
+  approvedAt  DateTime?
+  approvedById String?
+
+  @@index([seasonId])
+  @@index([status])
+  @@map("markdown_plans")
+}
+
+model MarkdownPhase {
+  id String @id @default(cuid())
+
+  planId String
+  plan   MarkdownPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  // Phase Info
+  phaseNumber    Int
+  name           String
+  markdownPct    Decimal @db.Decimal(5, 2) // e.g., 30%, 50%, 70%
+  minDaysAtPrice Int     @default(14) // Minimum days before next markdown
+
+  // Dates
+  startDate DateTime
+  endDate   DateTime
+
+  // Status
+  status MarkdownPhaseStatus @default(PENDING)
+
+  // Targets
+  targetSellThroughPct Decimal @db.Decimal(5, 2)
+
+  // Results (populated after execution)
+  actualSellThroughPct Decimal? @db.Decimal(5, 2)
+  actualRevenue        Decimal? @db.Decimal(18, 2)
+  unitsCleared         Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // SKU Plan Phases
+  skuPlanPhases MarkdownSKUPlanPhase[]
+
+  @@unique([planId, phaseNumber])
+  @@index([status])
+  @@map("markdown_phases")
+}
+
+model MarkdownSKUPlan {
+  id String @id @default(cuid())
+
+  planId String
+  plan   MarkdownPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  // SKU Info
+  skuId       String
+  skuCode     String
+  skuName     String
+  categoryId  String?
+  brandId     String?
+
+  // Current State
+  currentStock       Int
+  currentPrice       Decimal @db.Decimal(18, 2)
+  originalPrice      Decimal @db.Decimal(18, 2)
+  costPrice          Decimal @db.Decimal(18, 2)
+  currentStockValue  Decimal @db.Decimal(18, 2)
+
+  // Performance Data
+  weeksOnHand        Decimal @db.Decimal(5, 2)
+  sellThroughRate    Decimal @db.Decimal(5, 2)
+  weeksToSeasonEnd   Int
+
+  // AI Analysis
+  urgencyScore       Decimal @db.Decimal(3, 2) // 0.00-1.00
+  urgencyLevel       MarkdownUrgency @default(MEDIUM)
+  demandElasticity   Decimal? @db.Decimal(4, 2) // How price affects demand
+  optimalMarkdownPct Decimal? @db.Decimal(5, 2)
+
+  // Recommended Action
+  recommendedAction     MarkdownAction @default(MARKDOWN)
+  recommendedMarkdownPct Decimal?       @db.Decimal(5, 2)
+  recommendedNewPrice   Decimal?       @db.Decimal(18, 2)
+
+  // Projected Outcome
+  projectedUnitsSold    Int?
+  projectedRevenue      Decimal? @db.Decimal(18, 2)
+  projectedMarginLoss   Decimal? @db.Decimal(18, 2)
+  projectedDaysToSell   Int?
+
+  // Phase Details
+  phases MarkdownSKUPlanPhase[]
+
+  // Actual Results
+  results MarkdownResult[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([planId, skuId])
+  @@index([urgencyLevel])
+  @@index([recommendedAction])
+  @@map("markdown_sku_plans")
+}
+
+model MarkdownSKUPlanPhase {
+  id String @id @default(cuid())
+
+  skuPlanId String
+  skuPlan   MarkdownSKUPlan @relation(fields: [skuPlanId], references: [id], onDelete: Cascade)
+
+  phaseId String
+  phase   MarkdownPhase @relation(fields: [phaseId], references: [id], onDelete: Cascade)
+
+  // Phase-specific pricing
+  markdownPct      Decimal @db.Decimal(5, 2)
+  newPrice         Decimal @db.Decimal(18, 2)
+  projectedUnits   Int?
+  projectedRevenue Decimal? @db.Decimal(18, 2)
+
+  // Actual results
+  actualUnits   Int?
+  actualRevenue Decimal? @db.Decimal(18, 2)
+
+  @@unique([skuPlanId, phaseId])
+  @@map("markdown_sku_plan_phases")
+}
+
+model MarkdownResult {
+  id String @id @default(cuid())
+
+  planId String
+  plan   MarkdownPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  skuPlanId String?
+  skuPlan   MarkdownSKUPlan? @relation(fields: [skuPlanId], references: [id], onDelete: Cascade)
+
+  // Result Info
+  recordDate DateTime
+  week       Int
+
+  // Metrics
+  openingStock    Int
+  closingStock    Int
+  unitsSold       Int
+  revenue         Decimal @db.Decimal(18, 2)
+  avgSellingPrice Decimal @db.Decimal(18, 2)
+  markdownPct     Decimal @db.Decimal(5, 2)
+  marginLoss      Decimal @db.Decimal(18, 2)
+
+  // Performance vs Plan
+  sellThroughActual    Decimal @db.Decimal(5, 2)
+  sellThroughVariance  Decimal @db.Decimal(5, 2)
+  revenueVariancePct   Decimal @db.Decimal(5, 2)
+
+  createdAt DateTime @default(now())
+
+  @@index([planId, recordDate])
+  @@index([skuPlanId])
+  @@map("markdown_results")
+}
+
+// ============================================
+// MOC/MOQ MANAGEMENT (Replenishment)
+// ============================================
+
+enum ReplenishmentAlertStatus {
+  OPEN
+  ACKNOWLEDGED
+  ORDERED
+  RESOLVED
+  CANCELLED
+}
+
+enum ReplenishmentOrderStatus {
+  DRAFT
+  SUBMITTED
+  CONFIRMED
+  PARTIALLY_RECEIVED
+  RECEIVED
+  CANCELLED
+}
+
+model MOCTarget {
+  id String @id @default(cuid())
+
+  // Scope
+  brandId     String?
+  categoryId  String?
+  seasonId    String?
+  locationId  String?
+
+  // MOC Settings (Month of Cover)
+  minMOC     Decimal @db.Decimal(4, 2) @default(1.5) // Minimum months of cover
+  targetMOC  Decimal @db.Decimal(4, 2) @default(2.5) // Target months of cover
+  maxMOC     Decimal @db.Decimal(4, 2) @default(4.0) // Maximum months of cover
+
+  // Lead Time Settings
+  leadTimeDays Int @default(30)
+
+  // Safety Stock
+  safetyStockDays Int @default(14)
+
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([brandId, categoryId, seasonId, locationId])
+  @@map("moc_targets")
+}
+
+model MOQRule {
+  id String @id @default(cuid())
+
+  // Supplier Info
+  supplierId   String?
+  supplierName String?
+
+  // Scope
+  brandId    String?
+  categoryId String?
+
+  // MOQ Settings
+  moqUnits    Int     @default(50)  // Minimum Order Quantity
+  moqValue    Decimal @db.Decimal(18, 2) @default(1000) // Minimum Order Value
+  packSize    Int     @default(1)   // Units per pack
+  cartonSize  Int?    // Units per carton
+
+  // Pricing Tiers (stored as JSON)
+  pricingTiers Json? // [{ minQty: 100, discount: 5 }, { minQty: 500, discount: 10 }]
+
+  // Lead Time
+  leadTimeDays Int @default(30)
+
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([supplierId])
+  @@index([brandId])
+  @@map("moq_rules")
+}
+
+model ReplenishmentAlert {
+  id String @id @default(cuid())
+
+  // SKU Info
+  skuId      String
+  skuCode    String
+  skuName    String
+  brandId    String?
+  categoryId String?
+  locationId String?
+
+  // Alert Type
+  alertType   String // LOW_MOC, STOCKOUT_RISK, REORDER_POINT, LEAD_TIME_WARNING
+
+  // Current State
+  currentStock      Int
+  currentMOC        Decimal @db.Decimal(4, 2)
+  avgWeeklySales    Decimal @db.Decimal(10, 2)
+  targetMOC         Decimal @db.Decimal(4, 2)
+  safetyStock       Int
+
+  // Recommendation
+  recommendedOrderQty   Int
+  recommendedOrderValue Decimal @db.Decimal(18, 2)
+  recommendedOrderDate  DateTime
+  projectedStockoutDate DateTime?
+
+  // Status
+  status ReplenishmentAlertStatus @default(OPEN)
+
+  // Resolution
+  acknowledgedAt   DateTime?
+  acknowledgedById String?
+  resolvedAt       DateTime?
+  resolutionNotes  String?
+
+  // Link to order
+  orderId String?
+  order   ReplenishmentOrder? @relation(fields: [orderId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([alertType])
+  @@index([skuId])
+  @@map("replenishment_alerts")
+}
+
+model ReplenishmentOrder {
+  id String @id @default(cuid())
+
+  // Order Info
+  orderNumber  String @unique
+  supplierId   String?
+  supplierName String?
+
+  // Dates
+  orderDate        DateTime @default(now())
+  expectedDelivery DateTime
+  actualDelivery   DateTime?
+
+  // Totals
+  totalUnits Int
+  totalValue Decimal @db.Decimal(18, 2)
+
+  // Status
+  status ReplenishmentOrderStatus @default(DRAFT)
+
+  // Items
+  items ReplenishmentOrderItem[]
+
+  // Alerts resolved
+  alerts ReplenishmentAlert[]
+
+  // Audit
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdById String?
+  approvedAt  DateTime?
+  approvedById String?
+
+  @@index([status])
+  @@index([orderDate])
+  @@map("replenishment_orders")
+}
+
+model ReplenishmentOrderItem {
+  id String @id @default(cuid())
+
+  orderId String
+  order   ReplenishmentOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  // SKU Info
+  skuId   String
+  skuCode String
+  skuName String
+
+  // Quantities
+  orderedQty  Int
+  receivedQty Int @default(0)
+
+  // Pricing
+  unitCost   Decimal @db.Decimal(18, 2)
+  totalValue Decimal @db.Decimal(18, 2)
+
+  // Discount
+  discountPct Decimal? @db.Decimal(5, 2)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([orderId, skuId])
+  @@map("replenishment_order_items")
+}
+
+// ============================================
+// AI FORECASTING ENHANCEMENT
+// ============================================
+
+enum ForecastMethod {
+  MOVING_AVERAGE
+  EXPONENTIAL_SMOOTHING
+  TREND_ADJUSTED
+  SEASONAL_DECOMPOSITION
+  ENSEMBLE
+  AI_ML
+}
+
+model ForecastConfig {
+  id String @id @default(cuid())
+
+  // Scope
+  brandId    String?
+  categoryId String?
+  seasonId   String?
+
+  // Method Settings
+  primaryMethod   ForecastMethod @default(ENSEMBLE)
+  lookbackWeeks   Int            @default(12)
+  forecastWeeks   Int            @default(8)
+
+  // Weights for ensemble
+  movingAvgWeight   Decimal @db.Decimal(3, 2) @default(0.25)
+  expSmoothWeight   Decimal @db.Decimal(3, 2) @default(0.35)
+  trendWeight       Decimal @db.Decimal(3, 2) @default(0.40)
+
+  // Smoothing Factors
+  expSmoothAlpha    Decimal @db.Decimal(3, 2) @default(0.30) // Level smoothing
+  expSmoothBeta     Decimal @db.Decimal(3, 2) @default(0.10) // Trend smoothing
+  expSmoothGamma    Decimal @db.Decimal(3, 2) @default(0.20) // Seasonal smoothing
+
+  // Seasonality
+  seasonalPeriod    Int @default(52) // weeks in a year
+  seasonalAdjust    Boolean @default(true)
+
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([brandId, categoryId, seasonId])
+  @@map("forecast_configs")
+}
+
+model ForecastRun {
+  id String @id @default(cuid())
+
+  // Context
+  seasonId   String?
+  brandId    String?
+  categoryId String?
+
+  // Run Info
+  runDate    DateTime @default(now())
+  method     ForecastMethod
+  status     String @default("COMPLETED") // RUNNING, COMPLETED, FAILED
+
+  // Input Data Summary
+  inputStartDate DateTime
+  inputEndDate   DateTime
+  dataPoints     Int
+
+  // Accuracy Metrics
+  mape         Decimal? @db.Decimal(5, 2) // Mean Absolute Percentage Error
+  rmse         Decimal? @db.Decimal(10, 2) // Root Mean Square Error
+  confidenceInterval Decimal? @db.Decimal(3, 2)
+
+  // Results
+  results ForecastRunResult[]
+
+  // Metadata
+  parameters Json? // Method-specific parameters used
+
+  createdAt   DateTime @default(now())
+  createdById String?
+
+  @@index([seasonId, brandId])
+  @@index([runDate])
+  @@map("forecast_runs")
+}
+
+model ForecastRunResult {
+  id String @id @default(cuid())
+
+  runId String
+  run   ForecastRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  // Forecast Period
+  weekNumber    Int
+  weekStartDate DateTime
+  weekEndDate   DateTime
+
+  // Predictions
+  forecastValue     Decimal @db.Decimal(18, 2)
+  forecastUnits     Int
+  confidenceLower   Decimal @db.Decimal(18, 2)
+  confidenceUpper   Decimal @db.Decimal(18, 2)
+
+  // Component Breakdown (for ensemble)
+  movingAvgForecast Decimal? @db.Decimal(18, 2)
+  expSmoothForecast Decimal? @db.Decimal(18, 2)
+  trendForecast     Decimal? @db.Decimal(18, 2)
+
+  // Actual (filled in later)
+  actualValue Decimal? @db.Decimal(18, 2)
+  actualUnits Int?
+  variance    Decimal? @db.Decimal(5, 2)
+
+  createdAt DateTime @default(now())
+
+  @@unique([runId, weekNumber])
+  @@index([weekStartDate])
+  @@map("forecast_run_results")
 }

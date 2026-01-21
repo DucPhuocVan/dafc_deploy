@@ -605,3 +605,275 @@ export const integrationsApi = {
   registerFile: (data: { filename: string; originalName: string; mimeType: string; size: number; key: string; bucket: string; category: string; entityType?: string; entityId?: string }) =>
     apiClient.post<unknown>('/api/v1/integrations/s3/files', data),
 };
+
+// Size Profiles endpoints
+export const sizeProfilesApi = {
+  // Size Definitions
+  getDefinitions: (params?: { sizeType?: string; isActive?: boolean }) =>
+    apiClient.get<unknown[]>('/api/v1/size-profiles/definitions', params),
+
+  getDefinition: (id: string) =>
+    apiClient.get<unknown>(`/api/v1/size-profiles/definitions/${id}`),
+
+  createDefinition: (data: { name: string; code: string; sizeType: string; sortOrder?: number; isActive?: boolean }) =>
+    apiClient.post<unknown>('/api/v1/size-profiles/definitions', data),
+
+  updateDefinition: (id: string, data: { name?: string; code?: string; sizeType?: string; sortOrder?: number; isActive?: boolean }) =>
+    apiClient.put<unknown>(`/api/v1/size-profiles/definitions/${id}`, data),
+
+  deleteDefinition: (id: string) =>
+    apiClient.delete<{ deleted: boolean }>(`/api/v1/size-profiles/definitions/${id}`),
+
+  // Size Profiles
+  getAll: (params?: { categoryId?: string; seasonId?: string; locationId?: string; brandId?: string; profileType?: string; isActive?: boolean; page?: number; limit?: number }) =>
+    apiClient.get<unknown[]>('/api/v1/size-profiles', params),
+
+  getById: (id: string) =>
+    apiClient.get<unknown>(`/api/v1/size-profiles/${id}`),
+
+  create: (data: { name: string; profileType: string; categoryId?: string; seasonId?: string; locationId?: string; brandId?: string; sizeDistribution: { sizeId: string; percentage: number }[]; notes?: string }) =>
+    apiClient.post<unknown>('/api/v1/size-profiles', data),
+
+  update: (id: string, data: { name?: string; profileType?: string; sizeDistribution?: { sizeId: string; percentage: number }[]; isActive?: boolean; notes?: string }) =>
+    apiClient.put<unknown>(`/api/v1/size-profiles/${id}`, data),
+
+  delete: (id: string) =>
+    apiClient.delete<{ deleted: boolean }>(`/api/v1/size-profiles/${id}`),
+
+  // Size Breakdown
+  getBreakdown: (categoryId: string, params?: { seasonId?: string; locationId?: string }) =>
+    apiClient.get<unknown>(`/api/v1/size-profiles/breakdown/${categoryId}`, params),
+
+  // Optimization
+  optimize: (data: { categoryId: string; seasonId?: string; locationId?: string; historicalProfileId?: string; trendProfileId?: string; historicalWeight?: number; trendWeight?: number }) =>
+    apiClient.post<unknown>('/api/v1/size-profiles/optimize', data),
+
+  // Comparison
+  compare: (profileIds: string[]) =>
+    apiClient.post<unknown>('/api/v1/size-profiles/compare', { profileIds }),
+};
+
+// KPI endpoints (Fashion-specific)
+export const kpiApi = {
+  getBenchmarks: () =>
+    apiClient.get<unknown>('/api/v1/kpi/benchmarks'),
+
+  getDashboard: (params?: { divisionId?: string; seasonId?: string; year?: number }) =>
+    apiClient.get<unknown>('/api/v1/kpi/dashboard', params),
+
+  getBrandKPIs: (brandId: string, params?: { seasonId?: string }) =>
+    apiClient.get<unknown>(`/api/v1/kpi/brand/${brandId}`, params),
+
+  getCategoryKPIs: (categoryId: string, params?: { brandId?: string; seasonId?: string }) =>
+    apiClient.get<unknown>(`/api/v1/kpi/category/${categoryId}`, params),
+
+  getKPITrend: (brandId: string, kpiName: string, params?: { weeks?: number; seasonId?: string }) =>
+    apiClient.get<unknown>(`/api/v1/kpi/trend/${brandId}/${kpiName}`, params),
+
+  calculateGMROI: (grossMargin: number, averageInventoryCost: number) =>
+    apiClient.get<unknown>('/api/v1/kpi/calculate/gmroi', { grossMargin, averageInventoryCost }),
+
+  calculateSellThrough: (unitsSold: number, unitsAvailable: number) =>
+    apiClient.get<unknown>('/api/v1/kpi/calculate/sell-through', { unitsSold, unitsAvailable }),
+
+  calculateWeeksOfCover: (currentStock: number, avgWeeklySales: number) =>
+    apiClient.get<unknown>('/api/v1/kpi/calculate/woc', { currentStock, avgWeeklySales }),
+
+  calculateGrossMargin: (revenue: number, cogs: number) =>
+    apiClient.get<unknown>('/api/v1/kpi/calculate/gross-margin', { revenue, cogs }),
+
+  calculatePlanAccuracy: (actual: number, plan: number) =>
+    apiClient.get<unknown>('/api/v1/kpi/calculate/plan-accuracy', { actual, plan }),
+};
+
+// Power BI endpoints
+export const powerbiApi = {
+  getConfig: () =>
+    apiClient.get<unknown>('/api/v1/powerbi/config'),
+
+  getReports: (params?: { type?: string; isActive?: boolean }) =>
+    apiClient.get<unknown[]>('/api/v1/powerbi/reports', params),
+
+  getReport: (id: string) =>
+    apiClient.get<unknown>(`/api/v1/powerbi/reports/${id}`),
+
+  createReport: (data: { name: string; type: string; powerbiReportId: string; powerbiGroupId?: string; description?: string; thumbnail?: string; defaultFilters?: Record<string, unknown>; isActive?: boolean }) =>
+    apiClient.post<unknown>('/api/v1/powerbi/reports', data),
+
+  updateReport: (id: string, data: { name?: string; type?: string; powerbiReportId?: string; powerbiGroupId?: string; description?: string; thumbnail?: string; defaultFilters?: Record<string, unknown>; isActive?: boolean }) =>
+    apiClient.put<unknown>(`/api/v1/powerbi/reports/${id}`, data),
+
+  deleteReport: (id: string) =>
+    apiClient.delete<{ deleted: boolean }>(`/api/v1/powerbi/reports/${id}`),
+
+  generateEmbedToken: (data: { reportId: string; groupId?: string; datasetId?: string; roles?: string[]; filter?: Record<string, unknown> }) =>
+    apiClient.post<{ token: string; expiration: string; embedUrl: string; reportId: string }>('/api/v1/powerbi/embed-token', data),
+
+  listWorkspaceReports: (groupId?: string) =>
+    apiClient.get<unknown[]>('/api/v1/powerbi/workspace/reports', { groupId }),
+
+  refreshDataset: (datasetId: string, groupId?: string) =>
+    apiClient.post<unknown>(`/api/v1/powerbi/datasets/${datasetId}/refresh`, { groupId }),
+};
+
+// SKU Analysis endpoints
+export const skuAnalysisApi = {
+  getBestPerformers: (params?: { brandId?: string; categoryId?: string; seasonId?: string; metric?: string; limit?: number; periodDays?: number }) =>
+    apiClient.get<unknown[]>('/api/v1/sku-analysis/best-performers', params),
+
+  getWorstPerformers: (params?: { brandId?: string; categoryId?: string; seasonId?: string; metric?: string; limit?: number; periodDays?: number }) =>
+    apiClient.get<unknown[]>('/api/v1/sku-analysis/worst-performers', params),
+
+  getRisingStars: (params?: { brandId?: string; categoryId?: string; seasonId?: string; limit?: number; periodDays?: number }) =>
+    apiClient.get<unknown[]>('/api/v1/sku-analysis/rising-stars', params),
+
+  getDeclining: (params?: { brandId?: string; categoryId?: string; seasonId?: string; limit?: number; periodDays?: number }) =>
+    apiClient.get<unknown[]>('/api/v1/sku-analysis/declining', params),
+
+  getSummary: (params?: { brandId?: string; categoryId?: string; seasonId?: string; periodDays?: number }) =>
+    apiClient.get<unknown>('/api/v1/sku-analysis/summary', params),
+
+  getRecommendations: (params?: { brandId?: string; categoryId?: string; seasonId?: string; limit?: number; periodDays?: number }) =>
+    apiClient.get<unknown[]>('/api/v1/sku-analysis/recommendations', params),
+
+  getMetrics: () =>
+    apiClient.get<{ metrics: { code: string; name: string; description: string }[] }>('/api/v1/sku-analysis/metrics'),
+};
+
+// ============================================
+// PHASE 3: Advanced Features
+// ============================================
+
+// Clearance Optimization Engine (COE) endpoints
+export const clearanceApi = {
+  // Plans
+  createPlan: (data: { name: string; description?: string; seasonId: string; brandId?: string; startDate: string; endDate: string; targetRecoveryValue: number; targetSellThroughPct: number; maxMarkdownPct?: number; phases?: unknown[] }) =>
+    apiClient.post<unknown>('/api/v1/clearance/plans', data),
+
+  getPlans: (params?: { seasonId?: string; brandId?: string; status?: string }) =>
+    apiClient.get<unknown[]>('/api/v1/clearance/plans', params),
+
+  getPlan: (id: string) =>
+    apiClient.get<unknown>(`/api/v1/clearance/plans/${id}`),
+
+  deletePlan: (id: string) =>
+    apiClient.delete<{ deleted: boolean }>(`/api/v1/clearance/plans/${id}`),
+
+  // Optimization
+  optimizePlan: (data: { planId: string; strategy?: 'MAXIMIZE_RECOVERY' | 'MAXIMIZE_SELL_THROUGH' | 'BALANCED'; analyzeElasticity?: boolean; minMarginPct?: number; skuIds?: string[] }) =>
+    apiClient.post<unknown>('/api/v1/clearance/optimize', data),
+
+  getEligibleSKUs: (params: { seasonId: string; brandId?: string; minWeeksOnHand?: number; maxSellThrough?: number }) =>
+    apiClient.get<unknown[]>('/api/v1/clearance/eligible-skus', params),
+
+  // Simulation
+  simulateScenario: (data: { planId: string; scenarioName?: string; globalMarkdownPct?: number; skuOverrides?: { skuId: string; markdownPct: number }[]; elasticityFactor?: number; weeksToSimulate?: number }) =>
+    apiClient.post<unknown>('/api/v1/clearance/simulate', data),
+
+  // Lifecycle
+  approvePlan: (id: string) =>
+    apiClient.put<unknown>(`/api/v1/clearance/plans/${id}/approve`),
+
+  activatePlan: (id: string) =>
+    apiClient.put<unknown>(`/api/v1/clearance/plans/${id}/activate`),
+
+  // Results
+  getPlanResults: (id: string) =>
+    apiClient.get<unknown>(`/api/v1/clearance/plans/${id}/results`),
+};
+
+// Replenishment (MOC/MOQ) endpoints
+export const replenishmentApi = {
+  // MOC Targets
+  createMOCTarget: (data: { brandId?: string; categoryId?: string; seasonId?: string; locationId?: string; minMOC: number; targetMOC: number; maxMOC: number; leadTimeDays?: number; safetyStockDays?: number }) =>
+    apiClient.post<unknown>('/api/v1/replenishment/moc-targets', data),
+
+  getMOCTargets: (params?: { brandId?: string; categoryId?: string; seasonId?: string; isActive?: boolean }) =>
+    apiClient.get<unknown[]>('/api/v1/replenishment/moc-targets', params),
+
+  updateMOCTarget: (id: string, data: unknown) =>
+    apiClient.put<unknown>(`/api/v1/replenishment/moc-targets/${id}`, data),
+
+  deleteMOCTarget: (id: string) =>
+    apiClient.delete<{ deleted: boolean }>(`/api/v1/replenishment/moc-targets/${id}`),
+
+  // MOQ Rules
+  createMOQRule: (data: { supplierId?: string; supplierName?: string; brandId?: string; categoryId?: string; moqUnits: number; moqValue: number; packSize?: number; cartonSize?: number; leadTimeDays?: number }) =>
+    apiClient.post<unknown>('/api/v1/replenishment/moq-rules', data),
+
+  getMOQRules: (params?: { supplierId?: string; brandId?: string; categoryId?: string }) =>
+    apiClient.get<unknown[]>('/api/v1/replenishment/moq-rules', params),
+
+  updateMOQRule: (id: string, data: unknown) =>
+    apiClient.put<unknown>(`/api/v1/replenishment/moq-rules/${id}`, data),
+
+  deleteMOQRule: (id: string) =>
+    apiClient.delete<{ deleted: boolean }>(`/api/v1/replenishment/moq-rules/${id}`),
+
+  // Inventory Status
+  getInventoryStatus: (params?: { brandId?: string; categoryId?: string; locationId?: string; statusFilter?: 'ALL' | 'LOW' | 'CRITICAL' | 'STOCKOUT' | 'OVERSTOCK' }) =>
+    apiClient.get<unknown[]>('/api/v1/replenishment/inventory-status', params),
+
+  generateAlerts: (params?: { brandId?: string; locationId?: string }) =>
+    apiClient.post<{ alertsCreated: number }>('/api/v1/replenishment/generate-alerts', undefined),
+
+  // Alerts
+  getAlerts: (params?: { status?: string; alertType?: string; brandId?: string; limit?: number }) =>
+    apiClient.get<unknown[]>('/api/v1/replenishment/alerts', params),
+
+  acknowledgeAlert: (id: string) =>
+    apiClient.put<unknown>(`/api/v1/replenishment/alerts/${id}/acknowledge`),
+
+  resolveAlert: (id: string, notes: string) =>
+    apiClient.put<unknown>(`/api/v1/replenishment/alerts/${id}/resolve`, { notes }),
+
+  // Orders
+  createOrder: (data: { supplierId?: string; supplierName?: string; expectedDelivery: string; items: { skuId: string; skuCode: string; skuName: string; orderedQty: number; unitCost: number; discountPct?: number }[]; alertIds?: string[] }) =>
+    apiClient.post<unknown>('/api/v1/replenishment/orders', data),
+
+  getOrders: (params?: { status?: string; supplierId?: string; limit?: number }) =>
+    apiClient.get<unknown[]>('/api/v1/replenishment/orders', params),
+
+  getOrder: (id: string) =>
+    apiClient.get<unknown>(`/api/v1/replenishment/orders/${id}`),
+
+  submitOrder: (id: string) =>
+    apiClient.put<unknown>(`/api/v1/replenishment/orders/${id}/submit`),
+
+  confirmOrder: (id: string) =>
+    apiClient.put<unknown>(`/api/v1/replenishment/orders/${id}/confirm`),
+
+  receiveOrder: (id: string, items: { skuId: string; receivedQty: number }[]) =>
+    apiClient.put<unknown>(`/api/v1/replenishment/orders/${id}/receive`, items),
+
+  // Dashboard
+  getDashboard: (params?: { brandId?: string; locationId?: string }) =>
+    apiClient.get<unknown>('/api/v1/replenishment/dashboard', params),
+};
+
+// AI Forecasting endpoints
+export const forecastingApi = {
+  // Configs
+  createConfig: (data: { brandId?: string; categoryId?: string; seasonId?: string; primaryMethod: string; lookbackWeeks?: number; forecastWeeks?: number; movingAvgWeight?: number; expSmoothWeight?: number; trendWeight?: number }) =>
+    apiClient.post<unknown>('/api/v1/forecasting/configs', data),
+
+  getConfigs: (params?: { brandId?: string; categoryId?: string; isActive?: boolean }) =>
+    apiClient.get<unknown[]>('/api/v1/forecasting/configs', params),
+
+  updateConfig: (id: string, data: unknown) =>
+    apiClient.put<unknown>(`/api/v1/forecasting/configs/${id}`, data),
+
+  // Forecast Runs
+  runForecast: (data: { seasonId?: string; brandId?: string; categoryId?: string; method: 'MOVING_AVERAGE' | 'EXPONENTIAL_SMOOTHING' | 'TREND_ADJUSTED' | 'ENSEMBLE'; lookbackWeeks?: number; forecastWeeks?: number }) =>
+    apiClient.post<unknown>('/api/v1/forecasting/run', data),
+
+  getForecastRuns: (params?: { seasonId?: string; brandId?: string; categoryId?: string; limit?: number }) =>
+    apiClient.get<unknown[]>('/api/v1/forecasting/runs', params),
+
+  getForecastRun: (id: string) =>
+    apiClient.get<unknown>(`/api/v1/forecasting/runs/${id}`),
+
+  // Method Comparison
+  compareMethods: (data: { seasonId?: string; brandId?: string; categoryId?: string; lookbackWeeks?: number; forecastWeeks?: number }) =>
+    apiClient.post<unknown>('/api/v1/forecasting/compare-methods', data),
+};

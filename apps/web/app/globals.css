@@ -1,411 +1,822 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* ════════════════════════════════════════════════════════════
-   DAFC OTB DESIGN SYSTEM 2026
-   Premium Enterprise Dashboard - Minimalist & Sophisticated
-   ════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════════════════
+   DAFC OTB PLATFORM - INTEGRATED DESIGN SYSTEM
+   Brand: DAFC (Champagne Gold + Forest Green)
+   Framework: Industrial Precision UI
+   ═══════════════════════════════════════════════════════════════════════════ */
 
 @layer base {
   :root {
-    /* Shadcn UI Base Variables (HSL format) */
-    --background: 210 20% 98%;
-    --foreground: 220 14% 10%;
-    --card: 0 0% 100%;
-    --card-foreground: 220 14% 10%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 14% 10%;
-    --primary: 213 52% 24%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 210 20% 96%;
-    --secondary-foreground: 220 14% 10%;
-    --muted: 210 20% 96%;
-    --muted-foreground: 220 9% 46%;
-    --accent: 160 84% 39%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 213 52% 24%;
-    --radius: 0.75rem;
+    /* DAFC Brand Typography */
+    --font-brand: 'Montserrat', system-ui, sans-serif;
+    --font-display: 'Montserrat', system-ui, sans-serif;
+    --font-data: 'JetBrains Mono', 'Consolas', monospace;
+    --radius: 0.25rem;
+    --radius-pill: 99px;
 
-    /* Chart Colors */
-    --chart-1: 213 52% 45%;
-    --chart-2: 160 84% 39%;
-    --chart-3: 38 92% 50%;
-    --chart-4: 142 71% 45%;
-    --chart-5: 0 84% 60%;
-
-    /* ════════════════════════════════════════════════════════════
-       DESIGN SYSTEM 2026 - Extended Variables
-       ════════════════════════════════════════════════════════════ */
-
-    /* Brand Colors */
-    --color-brand-50: #EEF6FF;
-    --color-brand-100: #D9EBFF;
-    --color-brand-200: #BCE0FF;
-    --color-brand-300: #8ECAFF;
-    --color-brand-400: #58ABFF;
-    --color-brand-500: #3B8BFF;
-    --color-brand-600: #1E5FD9;
-    --color-brand-700: #1A4CAE;
-    --color-brand-800: #1E3A5F;
-    --color-brand-900: #0F1D2F;
-
-    /* Semantic Colors */
-    --color-success-50: #ECFDF5;
-    --color-success-100: #D1FAE5;
-    --color-success-500: #10B981;
-    --color-success-600: #059669;
-    --color-success-700: #047857;
-
-    --color-warning-50: #FFFBEB;
-    --color-warning-100: #FEF3C7;
-    --color-warning-500: #F59E0B;
-    --color-warning-600: #D97706;
-
-    --color-error-50: #FEF2F2;
-    --color-error-100: #FEE2E2;
-    --color-error-500: #EF4444;
-    --color-error-600: #DC2626;
-
-    --color-info-50: #EFF6FF;
-    --color-info-100: #DBEAFE;
-    --color-info-500: #3B82F6;
-    --color-info-600: #2563EB;
-
-    /* Semantic Tokens */
-    --bg-primary: #FFFFFF;
-    --bg-secondary: #F9FAFB;
-    --bg-tertiary: #F3F4F6;
-    --fg-primary: #111827;
-    --fg-secondary: #4B5563;
-    --fg-tertiary: #9CA3AF;
-    --border-default: #E5E7EB;
-    --border-subtle: #F3F4F6;
-
-    /* Premium Shadows */
-    --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.03);
-    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.04), 0 1px 2px -1px rgb(0 0 0 / 0.03);
-    --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.04), 0 1px 2px -1px rgb(0 0 0 / 0.03);
-    --shadow-card-hover: 0 10px 15px -3px rgb(0 0 0 / 0.06), 0 4px 6px -4px rgb(0 0 0 / 0.04);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.03);
-    --shadow-brand: 0 4px 14px 0 rgb(30 62 95 / 0.15);
-
-    /* Layout */
-    --sidebar-width: 260px;
-    --header-height: 64px;
+    /* DAFC Brand Colors - Core Identity */
+    --dafc-gold: 30 43% 72%;        /* #D7B797 - Champagne Gold */
+    --dafc-gold-light: 30 45% 82%;  /* #E8D4C0 - Light Gold */
+    --dafc-gold-dark: 30 40% 55%;   /* #B89970 - Dark Gold */
+    --dafc-green: 152 73% 27%;      /* #127749 - Forest Green */
+    --dafc-green-light: 152 60% 40%;/* #2A9E6A - Light Green */
+    --dafc-green-dark: 152 80% 18%; /* #095431 - Dark Green */
   }
 
+  /* ═══════════════════════════════════════════════════════════════════════════
+     LIGHT THEME - DAFC Light Mode
+     ═══════════════════════════════════════════════════════════════════════════ */
+  .light {
+    /* Canvas & Surfaces */
+    --background: 40 20% 98%;       /* #FDFCFB - Warm white */
+    --foreground: 0 0% 10%;         /* #1A1A1A - Near black */
+    --card: 40 15% 96%;             /* #F7F6F4 - Warm surface */
+    --card-foreground: 0 0% 10%;
+    --popover: 40 10% 94%;          /* #F2F0ED - Elevated surface */
+    --popover-foreground: 0 0% 10%;
+
+    /* DAFC Primary (Champagne Gold for light mode) */
+    --primary: var(--dafc-gold-dark);
+    --primary-foreground: 0 0% 100%;
+
+    /* DAFC Secondary (Forest Green) */
+    --secondary: var(--dafc-green);
+    --secondary-foreground: 0 0% 100%;
+
+    /* Muted & Neutral */
+    --muted: 30 10% 92%;            /* #EDEBE8 */
+    --muted-foreground: 0 0% 40%;   /* #666666 */
+
+    /* Accent (Gold) */
+    --accent: var(--dafc-gold);
+    --accent-foreground: 0 0% 10%;
+
+    /* Destructive */
+    --destructive: 0 72% 51%;       /* #DC2626 */
+    --destructive-foreground: 0 0% 100%;
+
+    /* Borders & Inputs */
+    --border: 30 10% 85%;           /* #DBD8D3 */
+    --input: 30 10% 85%;
+    --ring: var(--dafc-gold);
+
+    /* Status Colors - Light Mode */
+    --status-success: var(--dafc-green);
+    --status-warning: 38 92% 50%;   /* #F59E0B */
+    --status-critical: 0 72% 51%;   /* #DC2626 */
+    --status-info: 210 79% 46%;     /* #2563EB */
+
+    /* Chart Colors - DAFC Palette */
+    --chart-1: var(--dafc-gold);
+    --chart-2: var(--dafc-green);
+    --chart-3: 38 92% 50%;          /* Amber */
+    --chart-4: 270 60% 55%;         /* Purple */
+    --chart-5: 0 72% 51%;           /* Red */
+    --chart-6: 0 0% 50%;            /* Gray */
+
+    color-scheme: light;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     DARK THEME - DAFC Industrial Dark (Primary Mode)
+     ═══════════════════════════════════════════════════════════════════════════ */
   .dark {
-    /* Neutral Dark Theme - Pure grays without blue tint */
-    --background: 0 0% 7%;
-    --foreground: 0 0% 95%;
-    --card: 0 0% 10%;
+    /* Canvas & Surfaces - Pure black base */
+    --background: 0 0% 0%;          /* #000000 - Pure black canvas */
+    --foreground: 0 0% 95%;         /* #F2F2F2 - High contrast text */
+    --card: 0 0% 7%;                /* #121212 - Surface */
     --card-foreground: 0 0% 95%;
-    --popover: 0 0% 10%;
+    --popover: 0 0% 10%;            /* #1A1A1A - Elevated surface */
     --popover-foreground: 0 0% 95%;
-    --primary: 213 52% 50%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 14%;
+
+    /* DAFC Primary (Champagne Gold) */
+    --primary: var(--dafc-gold);
+    --primary-foreground: 0 0% 5%;
+
+    /* DAFC Secondary (Forest Green) */
+    --secondary: var(--dafc-green);
     --secondary-foreground: 0 0% 95%;
-    --muted: 0 0% 14%;
-    --muted-foreground: 0 0% 60%;
-    --accent: 160 84% 39%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 62% 50%;
+
+    /* Muted & Neutral */
+    --muted: 0 0% 14%;              /* #242424 */
+    --muted-foreground: 0 0% 60%;   /* #999999 */
+
+    /* Accent (Gold for dark mode prominence) */
+    --accent: var(--dafc-gold);
+    --accent-foreground: 0 0% 5%;
+
+    /* Destructive */
+    --destructive: 0 72% 55%;       /* #E53935 */
     --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 18%;
+
+    /* Borders & Inputs */
+    --border: 0 0% 18%;             /* #2E2E2E */
     --input: 0 0% 18%;
-    --ring: 213 52% 50%;
+    --ring: var(--dafc-gold);
 
-    /* Dark mode chart colors - high contrast */
-    --chart-1: 210 100% 65%;
-    --chart-2: 160 84% 55%;
-    --chart-3: 38 100% 60%;
-    --chart-4: 280 80% 65%;
-    --chart-5: 0 85% 65%;
+    /* Status Colors - DAFC Brand Aligned */
+    --status-success: var(--dafc-green);
+    --status-warning: 38 90% 51%;   /* #D29922 */
+    --status-critical: 4 90% 63%;   /* #F85149 */
+    --status-info: 210 100% 66%;    /* #58A6FF */
 
-    /* Dark mode semantic tokens - Neutral grays */
-    --bg-primary: #121212;
-    --bg-secondary: #1a1a1a;
-    --bg-tertiary: #242424;
-    --fg-primary: #f2f2f2;
-    --fg-secondary: #a3a3a3;
-    --fg-tertiary: #737373;
-    --border-default: #2e2e2e;
-    --border-subtle: #1a1a1a;
+    /* Chart Colors - Dark Mode Optimized */
+    --chart-1: var(--dafc-gold);
+    --chart-2: var(--dafc-green-light);
+    --chart-3: 38 90% 51%;          /* Amber */
+    --chart-4: 270 76% 71%;         /* Purple */
+    --chart-5: 4 90% 63%;           /* Red */
+    --chart-6: 0 0% 55%;            /* Gray */
 
-    /* Dark mode shadows */
-    --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.2);
-    --shadow-card-hover: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3);
-
-    /* Dark mode semantic colors (lighter variants for visibility) */
-    --color-success-50: #064E3B;
-    --color-success-100: #065F46;
-    --color-success-500: #34D399;
-    --color-success-600: #6EE7B7;
-    --color-success-700: #A7F3D0;
-
-    --color-warning-50: #78350F;
-    --color-warning-100: #92400E;
-    --color-warning-500: #FBBF24;
-    --color-warning-600: #FCD34D;
-
-    --color-error-50: #7F1D1D;
-    --color-error-100: #991B1B;
-    --color-error-500: #F87171;
-    --color-error-600: #FCA5A5;
-
-    --color-info-50: #1E3A8A;
-    --color-info-100: #1E40AF;
-    --color-info-500: #60A5FA;
-    --color-info-600: #93C5FD;
-
-    /* Dark mode brand colors - neutral base with blue accent */
-    --color-brand-50: #1a1a1a;
-    --color-brand-100: #242424;
-    --color-brand-800: #8ECAFF;
-    --color-brand-900: #BCE0FF;
+    color-scheme: dark;
   }
-}
 
-@layer base {
   * {
     @apply border-border;
   }
 
-  body {
-    @apply bg-background text-foreground antialiased;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  html {
+    font-size: 12px;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Premium number formatting */
-  .font-metric {
-    font-variant-numeric: tabular-nums;
-    letter-spacing: -0.02em;
+  body {
+    @apply bg-background text-foreground font-display transition-colors duration-200;
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     SELECTION STYLES - DAFC Gold
+     ───────────────────────────────────────────────────────────────────────── */
+  .light ::selection {
+    background: rgba(215, 183, 151, 0.35);  /* DAFC Gold */
+    color: #1A1A1A;
+  }
+
+  .dark ::selection {
+    background: rgba(215, 183, 151, 0.3);   /* DAFC Gold */
+    color: #F2F2F2;
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     SCROLLBAR STYLES - Industrial Minimal
+     ───────────────────────────────────────────────────────────────────────── */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .light ::-webkit-scrollbar-track {
+    background: #EDEBE8;
+  }
+
+  .light ::-webkit-scrollbar-thumb {
+    background: #D7B797;  /* DAFC Gold */
+    border-radius: 2px;
+  }
+
+  .light ::-webkit-scrollbar-thumb:hover {
+    background: #B89970;  /* DAFC Gold Dark */
+  }
+
+  .dark ::-webkit-scrollbar-track {
+    background: #1A1A1A;
+  }
+
+  .dark ::-webkit-scrollbar-thumb {
+    background: #2E2E2E;
+    border-radius: 2px;
+  }
+
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: #3D3D3D;
+  }
+
+  /* Firefox scrollbar */
+  .light * {
+    scrollbar-width: thin;
+    scrollbar-color: #D7B797 #EDEBE8;
+  }
+
+  .dark * {
+    scrollbar-width: thin;
+    scrollbar-color: #2E2E2E #1A1A1A;
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     FOCUS STYLES
+     ───────────────────────────────────────────────────────────────────────── */
+  :focus-visible {
+    @apply outline-none;
+    box-shadow: 0 0 0 3px hsl(var(--ring) / 0.3);
   }
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+/* ═══════════════════════════════════════════════════════════════════════════
+   COMPONENT LAYER - Industrial Components
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+  /* ─────────────────────────────────────────────────────────────────────────
+     TYPOGRAPHY UTILITIES
+     ───────────────────────────────────────────────────────────────────────── */
+
+  .text-data {
+    @apply font-data tabular-nums;
   }
 
-  /* Premium card styles */
-  .card-premium {
-    @apply bg-card rounded-xl p-6 transition-all duration-200;
-    box-shadow: var(--shadow-card);
+  .text-label {
+    @apply text-xs font-medium uppercase tracking-wider text-content-secondary;
   }
 
-  .card-premium:hover {
-    box-shadow: var(--shadow-card-hover);
+  .text-value {
+    @apply font-data text-2xl font-semibold tabular-nums;
   }
 
-  .card-premium-interactive:hover {
-    transform: translateY(-2px);
+  .text-value-lg {
+    @apply font-data text-3xl font-bold tabular-nums;
   }
 
-  /* Premium label style */
-  .label-premium {
-    @apply text-xs font-medium uppercase tracking-wider;
-    color: var(--fg-tertiary);
+  /* ─────────────────────────────────────────────────────────────────────────
+     TREND INDICATORS
+     ───────────────────────────────────────────────────────────────────────── */
+
+  .trend-positive {
+    @apply text-data-positive;
   }
 
-  /* Premium value style */
-  .value-premium {
-    @apply text-3xl font-bold tracking-tight;
-    color: var(--fg-primary);
+  .trend-positive::before {
+    content: '▲ ';
   }
 
-  /* Premium metric change */
-  .metric-change-positive {
-    color: var(--color-success-600);
+  .trend-negative {
+    @apply text-data-negative;
   }
 
-  .metric-change-negative {
-    color: var(--color-error-600);
+  .trend-negative::before {
+    content: '▼ ';
   }
 
-  /* Premium badge styles */
-  .badge-premium {
-    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide;
+  .trend-neutral {
+    @apply text-data-neutral;
   }
 
-  .badge-success {
-    background: var(--color-success-100);
-    color: var(--color-success-700);
+  .trend-neutral::before {
+    content: '● ';
   }
 
-  .badge-warning {
-    background: var(--color-warning-100);
-    color: var(--color-warning-600);
-  }
+  /* ─────────────────────────────────────────────────────────────────────────
+     STATUS DOT
+     ───────────────────────────────────────────────────────────────────────── */
 
-  .badge-error {
-    background: var(--color-error-100);
-    color: var(--color-error-600);
-  }
-
-  /* Status indicator dots */
   .status-dot {
-    @apply w-2 h-2 rounded-full;
+    @apply inline-block w-1.5 h-1.5 rounded-full;
   }
 
-  .status-dot-success {
-    background: var(--color-success-500);
+  .status-dot-critical {
+    @apply bg-status-critical;
   }
 
   .status-dot-warning {
-    background: var(--color-warning-500);
+    @apply bg-status-warning;
   }
 
-  .status-dot-error {
-    background: var(--color-error-500);
+  .status-dot-success {
+    @apply bg-status-success;
   }
 
-  /* Divider */
-  .divider {
-    @apply h-px my-4;
-    background: var(--border-subtle);
+  .status-dot-info {
+    @apply bg-status-info;
   }
 
-  /* ════════════════════════════════════════════════════════════
-     MOBILE & PWA UTILITIES
-     ════════════════════════════════════════════════════════════ */
+  /* ─────────────────────────────────────────────────────────────────────────
+     INDUSTRIAL CARD
+     ───────────────────────────────────────────────────────────────────────── */
 
-  /* Safe area insets for notched devices */
-  .safe-area-top {
-    padding-top: env(safe-area-inset-top, 0);
+  .ind-card {
+    @apply bg-surface border border-border rounded-lg;
   }
 
-  .safe-area-bottom {
-    padding-bottom: env(safe-area-inset-bottom, 0);
+  .ind-card-header {
+    @apply px-4 py-3 border-b border-border-muted;
   }
 
-  .safe-area-left {
-    padding-left: env(safe-area-inset-left, 0);
+  .ind-card-content {
+    @apply p-4;
   }
 
-  .safe-area-right {
-    padding-right: env(safe-area-inset-right, 0);
+  .ind-card-footer {
+    @apply px-4 py-3 border-t border-border-muted;
   }
 
-  .safe-area-inset {
-    padding-top: env(safe-area-inset-top, 0);
-    padding-bottom: env(safe-area-inset-bottom, 0);
-    padding-left: env(safe-area-inset-left, 0);
-    padding-right: env(safe-area-inset-right, 0);
+  /* Status accent cards */
+  .ind-card-critical {
+    @apply border-t-2 border-t-status-critical;
   }
 
-  /* Touch-friendly tap targets */
-  .touch-target {
-    @apply min-h-[44px] min-w-[44px];
+  .ind-card-warning {
+    @apply border-t-2 border-t-status-warning;
   }
 
-  .touch-target-sm {
-    @apply min-h-[36px] min-w-[36px];
+  .ind-card-success {
+    @apply border-t-2 border-t-status-success;
   }
 
-  /* Pull to refresh indicator */
-  .ptr-indicator {
-    @apply absolute inset-x-0 top-0 flex items-center justify-center;
-    transition: transform 0.2s ease-out;
+  .ind-card-info {
+    @apply border-t-2 border-t-status-info;
   }
 
-  /* Smooth scrolling for mobile */
-  .scroll-smooth-mobile {
-    -webkit-overflow-scrolling: touch;
-    scroll-behavior: smooth;
+  /* ─────────────────────────────────────────────────────────────────────────
+     INDUSTRIAL TABLE
+     ───────────────────────────────────────────────────────────────────────── */
+
+  .ind-table {
+    @apply w-full text-base;
   }
 
-  /* Prevent text selection on mobile navigation */
-  .no-select {
-    -webkit-user-select: none;
-    user-select: none;
+  .ind-table thead {
+    @apply bg-surface-secondary;
   }
 
-  /* Mobile action sheet */
-  .action-sheet {
-    @apply fixed inset-x-0 bottom-0 z-50 bg-background rounded-t-2xl;
-    padding-bottom: env(safe-area-inset-bottom, 16px);
+  .ind-table th {
+    @apply h-10 px-3 text-left text-sm font-semibold uppercase tracking-wide text-content-secondary border-b border-border;
   }
 
-  /* Swipe action styles */
-  .swipe-action {
-    @apply flex items-center justify-center h-full px-4;
-    min-width: 72px;
+  .ind-table th[data-align="right"] {
+    @apply text-right;
   }
 
-  /* Bottom sheet handle */
-  .sheet-handle {
-    @apply w-10 h-1 bg-muted-foreground/30 rounded-full mx-auto my-2;
+  .ind-table th[data-align="center"] {
+    @apply text-center;
   }
 
-  /* Mobile card stack */
-  .card-stack {
-    @apply space-y-3;
+  .ind-table td {
+    @apply h-row px-3 border-b border-border-muted;
   }
 
-  .card-stack > * {
-    @apply rounded-xl bg-card p-4 shadow-sm;
+  .ind-table td[data-align="right"] {
+    @apply text-right;
   }
 
-  /* Responsive text utilities */
-  .text-responsive-xs {
-    @apply text-xs sm:text-sm;
+  .ind-table td[data-align="center"] {
+    @apply text-center;
   }
 
-  .text-responsive-sm {
-    @apply text-sm sm:text-base;
+  .ind-table tbody tr {
+    @apply bg-surface;
   }
 
-  .text-responsive-base {
-    @apply text-base sm:text-lg;
+  .ind-table tbody tr:nth-child(even) {
+    @apply bg-surface-secondary;
   }
 
-  .text-responsive-lg {
-    @apply text-lg sm:text-xl md:text-2xl;
+  .ind-table tbody tr:hover {
+    @apply bg-surface-elevated;
   }
 
-  .text-responsive-xl {
-    @apply text-xl sm:text-2xl md:text-3xl;
+  .ind-table tbody tr.selected {
+    @apply bg-status-info-muted border-l-2 border-l-accent;
   }
 
-  /* Mobile-optimized spacing */
-  .p-responsive {
-    @apply p-4 sm:p-5 md:p-6;
+  /* Numeric cells */
+  .ind-table .cell-numeric {
+    @apply font-data tabular-nums text-right;
   }
 
-  .px-responsive {
-    @apply px-4 sm:px-5 md:px-6;
+  /* ─────────────────────────────────────────────────────────────────────────
+     INDUSTRIAL BUTTONS
+     ───────────────────────────────────────────────────────────────────────── */
+
+  .ind-btn {
+    @apply inline-flex items-center justify-center gap-1.5 h-btn px-4
+           font-medium text-base rounded transition-all duration-fast
+           disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
-  .py-responsive {
-    @apply py-4 sm:py-5 md:py-6;
+  .ind-btn-primary {
+    @apply bg-accent text-white;
   }
 
-  .gap-responsive {
-    @apply gap-3 sm:gap-4 md:gap-5;
+  .ind-btn-primary:hover:not(:disabled) {
+    @apply bg-accent-hover;
   }
 
-  /* Grid responsive */
-  .grid-responsive-1-2-3 {
-    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3;
+  .ind-btn-primary:active:not(:disabled) {
+    @apply bg-accent-active;
   }
 
-  .grid-responsive-1-2-4 {
-    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4;
+  .ind-btn-secondary {
+    @apply bg-transparent border border-border text-content;
   }
 
-  .grid-responsive-2-3-4 {
-    @apply grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4;
+  .ind-btn-secondary:hover:not(:disabled) {
+    @apply bg-surface-secondary;
+  }
+
+  .ind-btn-secondary:active:not(:disabled) {
+    @apply bg-surface-elevated;
+  }
+
+  .ind-btn-danger {
+    @apply bg-status-critical text-white;
+  }
+
+  .ind-btn-danger:hover:not(:disabled) {
+    @apply bg-status-critical-text;
+  }
+
+  .ind-btn-ghost {
+    @apply bg-transparent text-content-secondary;
+  }
+
+  .ind-btn-ghost:hover:not(:disabled) {
+    @apply bg-surface-secondary text-content;
+  }
+
+  .ind-btn-sm {
+    @apply h-btn-sm px-3 text-sm;
+  }
+
+  .ind-btn-lg {
+    @apply h-btn-lg px-5 text-md;
+  }
+
+  .ind-btn-icon {
+    @apply w-btn h-btn p-0;
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     INDUSTRIAL BADGES
+     ───────────────────────────────────────────────────────────────────────── */
+
+  .ind-badge {
+    @apply inline-flex items-center gap-1 h-5 px-2
+           text-xs font-semibold uppercase tracking-wide
+           rounded border;
+  }
+
+  .ind-badge-critical {
+    background: rgba(248, 81, 73, 0.15);
+    color: #FF7B72;
+    border-color: rgba(248, 81, 73, 0.4);
+  }
+
+  .ind-badge-warning {
+    background: rgba(210, 153, 34, 0.15);
+    color: #E3B341;
+    border-color: rgba(210, 153, 34, 0.4);
+  }
+
+  .ind-badge-success {
+    background: rgba(63, 185, 80, 0.15);
+    color: #7EE787;
+    border-color: rgba(63, 185, 80, 0.4);
+  }
+
+  .ind-badge-info {
+    background: rgba(88, 166, 255, 0.15);
+    color: #79C0FF;
+    border-color: rgba(88, 166, 255, 0.4);
+  }
+
+  .ind-badge-neutral {
+    @apply bg-surface-secondary text-content-secondary border-border;
+  }
+
+  .ind-badge-ai {
+    background: rgba(163, 113, 247, 0.15);
+    color: #D2A8FF;
+    border-color: rgba(163, 113, 247, 0.4);
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     INDUSTRIAL INPUTS
+     ───────────────────────────────────────────────────────────────────────── */
+
+  .ind-input {
+    @apply w-full h-input px-3
+           bg-surface-secondary border border-border rounded
+           text-content placeholder:text-content-muted
+           transition-all duration-fast;
+  }
+
+  .ind-input:focus {
+    @apply border-accent outline-none;
+    box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.3);
+  }
+
+  .ind-input-sm {
+    @apply h-input-sm text-sm;
+  }
+
+  .ind-input-error {
+    @apply border-status-critical bg-status-critical-muted;
+  }
+
+  .ind-select {
+    @apply ind-input appearance-none pr-10;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%238B949E'%3E%3Cpath d='M4.5 6L8 9.5 11.5 6' stroke='currentColor' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     INDUSTRIAL PROGRESS
+     ───────────────────────────────────────────────────────────────────────── */
+
+  .ind-progress {
+    @apply h-1 bg-surface-secondary rounded-sm overflow-hidden;
+  }
+
+  .ind-progress-fill {
+    @apply h-full bg-accent transition-all duration-normal;
+  }
+
+  .ind-progress-success .ind-progress-fill {
+    @apply bg-status-success;
+  }
+
+  .ind-progress-warning .ind-progress-fill {
+    @apply bg-status-warning;
+  }
+
+  .ind-progress-critical .ind-progress-fill {
+    @apply bg-status-critical;
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     KPI CARD
+     ───────────────────────────────────────────────────────────────────────── */
+
+  .kpi-card {
+    @apply bg-surface border border-border rounded-lg p-3;
+  }
+
+  .kpi-card-status {
+    @apply border-t-2;
+  }
+
+  .kpi-label {
+    @apply text-xs font-medium uppercase tracking-wider text-content-secondary mb-1;
+  }
+
+  .kpi-value {
+    @apply font-data text-2xl font-semibold tabular-nums text-content;
+  }
+
+  .kpi-trend {
+    @apply inline-flex items-center gap-0.5 font-data text-sm font-medium mt-1;
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     SKELETON LOADING
+     ───────────────────────────────────────────────────────────────────────── */
+
+  .skeleton {
+    @apply rounded;
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  .light .skeleton {
+    background: linear-gradient(
+      90deg,
+      #EDEBE8 0%,
+      #E0DDD8 50%,
+      #EDEBE8 100%
+    );
+  }
+
+  .dark .skeleton {
+    background: linear-gradient(
+      90deg,
+      #1A1A1A 0%,
+      #2E2E2E 50%,
+      #1A1A1A 100%
+    );
+  }
+
+  .skeleton-text {
+    @apply h-4 skeleton;
+  }
+
+  .skeleton-heading {
+    @apply h-6 skeleton;
+  }
+
+  .skeleton-card {
+    @apply h-20 skeleton;
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     DAFC BRAND COMPONENTS
+     ───────────────────────────────────────────────────────────────────────── */
+
+  /* DAFC Primary Button - Pill Shape */
+  .dafc-btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-2.5
+           font-brand font-semibold text-sm uppercase tracking-wider
+           transition-all duration-200;
+    background: hsl(var(--dafc-gold));
+    color: #000000;
+    border-radius: var(--radius-pill);
+    border: none;
+  }
+
+  .dafc-btn-primary:hover:not(:disabled) {
+    background: hsl(var(--dafc-gold-dark));
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(215, 183, 151, 0.4);
+  }
+
+  .dafc-btn-primary:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  .dafc-btn-primary:disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+
+  /* DAFC Secondary Button - Outlined Pill */
+  .dafc-btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-2.5
+           font-brand font-semibold text-sm uppercase tracking-wider
+           transition-all duration-200;
+    background: transparent;
+    color: hsl(var(--dafc-gold));
+    border: 2px solid hsl(var(--dafc-gold));
+    border-radius: var(--radius-pill);
+  }
+
+  .dafc-btn-secondary:hover:not(:disabled) {
+    background: rgba(215, 183, 151, 0.1);
+    border-color: hsl(var(--dafc-gold-light));
+    color: hsl(var(--dafc-gold-light));
+  }
+
+  .dafc-btn-secondary:disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+
+  /* DAFC Green Button */
+  .dafc-btn-green {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-2.5
+           font-brand font-semibold text-sm uppercase tracking-wider
+           transition-all duration-200;
+    background: hsl(var(--dafc-green));
+    color: #FFFFFF;
+    border-radius: var(--radius-pill);
+    border: none;
+  }
+
+  .dafc-btn-green:hover:not(:disabled) {
+    background: hsl(var(--dafc-green-light));
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(18, 119, 73, 0.4);
+  }
+
+  /* DAFC Card */
+  .dafc-card {
+    @apply bg-card border border-border rounded-lg overflow-hidden;
+  }
+
+  .dafc-card-header {
+    @apply px-4 py-3 border-b border-border;
+    background: linear-gradient(135deg, rgba(215, 183, 151, 0.05), transparent);
+  }
+
+  .dafc-card-content {
+    @apply p-4;
+  }
+
+  /* DAFC Card with Gold Accent */
+  .dafc-card-gold {
+    @apply dafc-card;
+    border-top: 3px solid hsl(var(--dafc-gold));
+  }
+
+  /* DAFC Card with Green Accent */
+  .dafc-card-green {
+    @apply dafc-card;
+    border-top: 3px solid hsl(var(--dafc-green));
+  }
+
+  /* DAFC Badge */
+  .dafc-badge {
+    @apply inline-flex items-center gap-1.5 px-3 py-1
+           font-brand font-semibold text-xs uppercase tracking-wider;
+    border-radius: var(--radius-pill);
+  }
+
+  .dafc-badge-gold {
+    background: rgba(215, 183, 151, 0.15);
+    color: hsl(var(--dafc-gold));
+    border: 1px solid rgba(215, 183, 151, 0.3);
+  }
+
+  .dafc-badge-green {
+    background: rgba(18, 119, 73, 0.15);
+    color: hsl(var(--dafc-green-light));
+    border: 1px solid rgba(18, 119, 73, 0.3);
+  }
+
+  /* DAFC Input - Pill Shape */
+  .dafc-input {
+    @apply w-full px-4 py-2.5
+           bg-card border border-border
+           text-foreground placeholder:text-muted-foreground
+           transition-all duration-200;
+    border-radius: var(--radius-pill);
+  }
+
+  .dafc-input:focus {
+    outline: none;
+    border-color: hsl(var(--dafc-gold));
+    box-shadow: 0 0 0 3px rgba(215, 183, 151, 0.2);
+  }
+
+  /* DAFC Table */
+  .dafc-table {
+    @apply w-full text-base;
+  }
+
+  .dafc-table thead {
+    background: linear-gradient(135deg, rgba(215, 183, 151, 0.08), rgba(215, 183, 151, 0.02));
+  }
+
+  .dafc-table th {
+    @apply h-10 px-3 text-left text-sm font-brand font-semibold uppercase tracking-wide
+           text-muted-foreground border-b border-border;
+  }
+
+  .dafc-table td {
+    @apply h-row px-3 border-b border-border/50;
+  }
+
+  .dafc-table tbody tr:hover {
+    background: rgba(215, 183, 151, 0.05);
+  }
+
+  .dafc-table tbody tr.selected {
+    background: rgba(215, 183, 151, 0.1);
+    border-left: 3px solid hsl(var(--dafc-gold));
+  }
+
+  /* DAFC Logo Crown */
+  .dafc-crown {
+    color: hsl(var(--dafc-gold));
+    filter: drop-shadow(0 2px 4px rgba(215, 183, 151, 0.3));
+  }
+
+  /* DAFC Gold Text */
+  .text-dafc-gold {
+    color: hsl(var(--dafc-gold));
+  }
+
+  /* DAFC Green Text */
+  .text-dafc-green {
+    color: hsl(var(--dafc-green));
+  }
+
+  /* DAFC Gradient */
+  .dafc-gradient {
+    background: linear-gradient(135deg, hsl(var(--dafc-gold)), hsl(var(--dafc-green)));
+  }
+
+  .dafc-gradient-text {
+    background: linear-gradient(135deg, hsl(var(--dafc-gold)), hsl(var(--dafc-green)));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   UTILITY LAYER
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@layer utilities {
+  /* Tabular numbers for data alignment */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Text ellipsis */
+  .text-ellipsis {
+    @apply overflow-hidden whitespace-nowrap;
+    text-overflow: ellipsis;
   }
 
   /* Hide scrollbar but keep functionality */
@@ -418,16 +829,43 @@
     display: none;
   }
 
-  /* Floating action button */
-  .fab {
-    @apply fixed right-4 bottom-20 md:bottom-6 z-40;
-    @apply w-14 h-14 rounded-full bg-primary text-primary-foreground;
-    @apply flex items-center justify-center shadow-lg;
-    @apply touch-target transition-transform active:scale-95;
+  /* Industrial divider */
+  .divider {
+    @apply border-t border-border-muted;
   }
 
-  .fab:hover {
-    @apply shadow-xl;
-    transform: translateY(-2px);
+  /* Glow effect for important elements */
+  .glow-critical {
+    box-shadow: 0 0 8px rgba(248, 81, 73, 0.4);
+  }
+
+  .glow-warning {
+    box-shadow: 0 0 8px rgba(210, 153, 34, 0.4);
+  }
+
+  .glow-success {
+    box-shadow: 0 0 8px rgba(63, 185, 80, 0.4);
+  }
+
+  .glow-info {
+    box-shadow: 0 0 8px rgba(88, 166, 255, 0.4);
+  }
+
+  /* Safe area insets */
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top, 0);
+  }
+
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+
+  /* Touch targets */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
+
+  .touch-target-sm {
+    @apply min-h-[36px] min-w-[36px];
   }
 }

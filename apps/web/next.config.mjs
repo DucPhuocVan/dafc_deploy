@@ -8,8 +8,9 @@ const nextConfig = {
   // PERFORMANCE
   // =====================================================
 
-  // Enable standalone output for Docker
-  output: 'standalone',
+  // Enable standalone output for Docker/production only
+  // Comment out for local development if having issues
+  ...(process.env.NODE_ENV === 'production' ? { output: 'standalone' } : {}),
 
   // Enable React strict mode for better debugging
   reactStrictMode: true,

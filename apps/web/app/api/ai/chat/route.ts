@@ -71,7 +71,7 @@ export async function POST(req: Request) {
     // Find brand ID if mentioned
     let brandId: string | undefined;
     if (queryAnalysis.brandHint) {
-      const brand = brands.find(b =>
+      const brand = brands.find((b: { id: string; name: string; code: string }) =>
         b.name.toLowerCase().includes(queryAnalysis.brandHint!.toLowerCase())
       );
       brandId = brand?.id;
@@ -80,7 +80,7 @@ export async function POST(req: Request) {
     // Find season ID if mentioned
     let seasonId: string | undefined;
     if (queryAnalysis.seasonHint) {
-      const season = seasons.find(s =>
+      const season = seasons.find((s: { id: string; code: string }) =>
         s.code.toLowerCase() === queryAnalysis.seasonHint!.toLowerCase()
       );
       seasonId = season?.id;

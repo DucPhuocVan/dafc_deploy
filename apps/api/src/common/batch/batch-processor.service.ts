@@ -203,7 +203,8 @@ export class BatchProcessorService {
       async (chunk) => {
         // Use raw query for better performance on large inserts
         const result = await this.prisma.$transaction(async (tx) => {
-          const created = await (tx as Record<string, { createMany: (args: { data: T[]; skipDuplicates?: boolean }) => Promise<{ count: number }> }>)[model].createMany({
+          const txModel = (tx as unknown as Record<string, { createMany: (args: { data: T[]; skipDuplicates?: boolean }) => Promise<{ count: number }> }>)[model];
+          const created = await txModel.createMany({
             data: chunk,
             skipDuplicates: true,
           });
@@ -229,18 +230,17 @@ export class BatchProcessorService {
     return this.processBatch(
       { ...options, items, chunkSize },
       async (chunk) => {
-        await this.prisma.$transaction(
-          chunk.map((item) => {
-            const { id, ...data } = item;
-            return (this.prisma as Record<string, { update: (args: { where: { id: string }; data: Omit<T, 'id'> }) => Promise<T> }>)[model].update({
-              where: { id },
-              data,
-            });
-          }),
-          {
-            timeout: 30000,
-          }
-        );
+        const prismaModel = (this.prisma as unknown as Record<string, { update: (args: { where: { id: string }; data: Omit<T, 'id'> }) => Promise<T> }>)[model];
+        const updatePromises = chunk.map((item) => {
+          const { id, ...data } = item;
+          return prismaModel.update({
+            where: { id },
+            data,
+          });
+        });
+        await this.prisma.$transaction(updatePromises as unknown as Parameters<typeof this.prisma.$transaction>[0], {
+          timeout: 30000,
+        });
         return chunk;
       }
     );
@@ -259,7 +259,8 @@ export class BatchProcessorService {
     return this.processBatch(
       { ...options, items: ids, chunkSize },
       async (chunk) => {
-        await (this.prisma as Record<string, { deleteMany: (args: { where: { id: { in: string[] } } }) => Promise<{ count: number }> }>)[model].deleteMany({
+        const prismaModel = (this.prisma as unknown as Record<string, { deleteMany: (args: { where: { id: { in: string[] } } }) => Promise<{ count: number }> }>)[model];
+        await prismaModel.deleteMany({
           where: { id: { in: chunk } },
         });
         return chunk;
@@ -306,10 +307,17 @@ export class BatchProcessorService {
       retailPrice: number;
       costPrice: number;
       orderQuantity: number;
-      [key: string]: unknown;
+      colorCode?: string;
+      colorName?: string;
+      material?: string;
+      sizeBreakdown?: unknown;
+      supplierSKU?: string;
+      leadTime?: number;
+      moq?: number;
+      countryOfOrigin?: string;
     }>,
-    options: Partial<BatchOptions<unknown>> = {}
-  ): Promise<BatchResult<unknown>> {
+    options: Partial<BatchOptions<typeof items[0]>> = {}
+  ): Promise<BatchResult<typeof items[0]>> {
     const chunkSize = options.chunkSize ?? 500;
 
     return this.processBatch(
@@ -326,21 +334,22 @@ export class BatchProcessorService {
           margin: ((item.retailPrice - item.costPrice) / item.retailPrice) * 100,
           orderQuantity: item.orderQuantity,
           orderValue: item.orderQuantity * item.costPrice,
-          colorCode: item.colorCode as string | undefined,
-          colorName: item.colorName as string | undefined,
-          material: item.material as string | undefined,
-          sizeBreakdown: item.sizeBreakdown,
-          supplierSKU: item.supplierSKU as string | undefined,
-          leadTime: item.leadTime as number | undefined,
-          moq: item.moq as number | undefined,
-          countryOfOrigin: item.countryOfOrigin as string | undefined,
+          colorCode: item.colorCode,
+          colorName: item.colorName,
+          material: item.material,
+          sizeBreakdown: item.sizeBreakdown as Record<string, unknown> | undefined,
+          supplierSKU: item.supplierSKU,
+          leadTime: item.leadTime,
+          moq: item.moq,
+          countryOfOrigin: item.countryOfOrigin,
           validationStatus: 'PENDING' as const,
         }));
 
         await this.prisma.$transaction(
           async (tx) => {
             await tx.sKUItem.createMany({
-              data: skuItems as Parameters<typeof tx.sKUItem.createMany>[0]['data'],
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              data: skuItems as any,
               skipDuplicates: true,
             });
 

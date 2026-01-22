@@ -261,8 +261,8 @@ export class SKUAnalysisService {
   ): SKUPerformanceDto[] {
     const metricKey = this.getMetricKey(metric);
     const sorted = [...skus].sort((a, b) => {
-      const aVal = (a as Record<string, unknown>)[metricKey] as number || 0;
-      const bVal = (b as Record<string, unknown>)[metricKey] as number || 0;
+      const aVal = ((a as unknown as Record<string, unknown>)[metricKey] as number) || 0;
+      const bVal = ((b as unknown as Record<string, unknown>)[metricKey] as number) || 0;
       return order === 'desc' ? bVal - aVal : aVal - bVal;
     });
 

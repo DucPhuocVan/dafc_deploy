@@ -54,6 +54,7 @@
   },
   "devDependencies": {
     "@nestjs/cli": "^10.4.0",
+    "@nestjs/event-emitter": "^3.0.1",
     "@nestjs/schematics": "^10.1.0",
     "@nestjs/testing": "^10.4.0",
     "@types/bcryptjs": "^2.4.6",

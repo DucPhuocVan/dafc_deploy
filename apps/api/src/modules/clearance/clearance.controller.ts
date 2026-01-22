@@ -11,7 +11,7 @@ import {
   Request,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { ClearanceService } from './clearance.service';
 import { CreateMarkdownPlanDto } from './dto/create-markdown-plan.dto';
 import { OptimizePlanDto } from './dto/optimize-plan.dto';
@@ -29,7 +29,7 @@ export class ClearanceController {
   @Post('plans')
   @ApiOperation({ summary: 'Create a new markdown plan' })
   @ApiResponse({ status: 201, description: 'Plan created successfully' })
-  async createPlan(@Body() dto: CreateMarkdownPlanDto, @Request() req) {
+  async createPlan(@Body() dto: CreateMarkdownPlanDto, @Request() req: { user: { id: string } }) {
     return this.clearanceService.createPlan(dto, req.user.id);
   }
 
@@ -104,7 +104,7 @@ export class ClearanceController {
   @Put('plans/:id/approve')
   @ApiOperation({ summary: 'Approve a markdown plan' })
   @ApiResponse({ status: 200, description: 'Plan approved' })
-  async approvePlan(@Param('id') id: string, @Request() req) {
+  async approvePlan(@Param('id') id: string, @Request() req: { user: { id: string } }) {
     return this.clearanceService.approvePlan(id, req.user.id);
   }
 

@@ -2,7 +2,7 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateForecastRunDto, CreateForecastConfigDto, ForecastMethodEnum } from './dto/create-forecast.dto';
 
-interface HistoricalDataPoint {
+export interface HistoricalDataPoint {
   weekNumber: number;
   weekStartDate: Date;
   salesValue: number;

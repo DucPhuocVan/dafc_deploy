@@ -3,7 +3,7 @@
  * Common utility functions for Playwright tests
  */
 
-import { Page, expect, Locator } from '@playwright/test';
+import { Page, expect, Locator, Response } from '@playwright/test';
 import { TestUsers, PerformanceThresholds } from './test-data';
 
 /**

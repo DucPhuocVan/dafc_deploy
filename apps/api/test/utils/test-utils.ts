@@ -2,13 +2,41 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
+interface MockPrismaModel {
+  findUnique: jest.Mock;
+  findMany: jest.Mock;
+  create: jest.Mock;
+  update: jest.Mock;
+  delete: jest.Mock;
+  count: jest.Mock;
+  createMany?: jest.Mock;
+  updateMany?: jest.Mock;
+}
+
+interface MockPrismaService {
+  $connect: jest.Mock;
+  $disconnect: jest.Mock;
+  $transaction: jest.Mock;
+  user: MockPrismaModel;
+  budgetAllocation: MockPrismaModel;
+  budgetChangeLog: Pick<MockPrismaModel, 'findMany' | 'create' | 'createMany' | 'count'>;
+  otbPlan: MockPrismaModel;
+  skuProposal: MockPrismaModel;
+  brand: MockPrismaModel;
+  season: MockPrismaModel;
+  location: MockPrismaModel;
+  category: MockPrismaModel;
+  notification: Pick<MockPrismaModel, 'findMany' | 'create' | 'update' | 'updateMany' | 'count'>;
+  workflow: Pick<MockPrismaModel, 'findUnique' | 'findMany' | 'create' | 'update' | 'count'>;
+}
+
 /**
  * Create a mock Prisma service with common database operations
  */
-export const createMockPrismaService = () => ({
+export const createMockPrismaService = (): MockPrismaService => ({
   $connect: jest.fn(),
   $disconnect: jest.fn(),
-  $transaction: jest.fn((callback) => callback(createMockPrismaService())),
+  $transaction: jest.fn((callback: (prisma: MockPrismaService) => unknown) => callback(createMockPrismaService())),
 
   user: {
     findUnique: jest.fn(),

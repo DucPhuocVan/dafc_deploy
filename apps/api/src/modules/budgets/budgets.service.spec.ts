@@ -203,7 +203,7 @@ describe('BudgetsService', () => {
   describe('update', () => {
     it('should update existing budget', async () => {
       prismaService.budgetAllocation.findUnique.mockResolvedValue(mockBudgets.draft);
-      prismaService.$transaction.mockImplementation(async (callback) => {
+      prismaService.$transaction.mockImplementation(async (callback: (tx: unknown) => unknown) => {
         return callback({
           budgetAllocation: {
             update: jest.fn().mockResolvedValue({
@@ -235,7 +235,7 @@ describe('BudgetsService', () => {
       prismaService.budgetAllocation.findUnique.mockResolvedValue(originalBudget);
 
       const mockCreateMany = jest.fn();
-      prismaService.$transaction.mockImplementation(async (callback) => {
+      prismaService.$transaction.mockImplementation(async (callback: (tx: unknown) => unknown) => {
         return callback({
           budgetAllocation: {
             update: jest.fn().mockResolvedValue({
@@ -383,7 +383,7 @@ describe('BudgetsService', () => {
       });
       const mockCreate = jest.fn();
 
-      prismaService.$transaction.mockImplementation(async (callback) => {
+      prismaService.$transaction.mockImplementation(async (callback: (tx: unknown) => unknown) => {
         return callback({
           budgetAllocation: { update: mockUpdate },
           budgetChangeLog: { create: mockCreate },

@@ -98,7 +98,7 @@ export class PowerBIService {
       }
 
       const data = await response.json();
-      this.accessToken = data.access_token;
+      this.accessToken = data.access_token as string;
       // Token expires in 1 hour, refresh 5 minutes early
       this.tokenExpiration = new Date(Date.now() + (data.expires_in - 300) * 1000);
 

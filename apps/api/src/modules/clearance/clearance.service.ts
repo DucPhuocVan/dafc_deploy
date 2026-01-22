@@ -213,12 +213,14 @@ export class ClearanceService {
     // Apply filters
     let filtered = mockSKUs;
 
-    if (params.minWeeksOnHand) {
-      filtered = filtered.filter((s) => s.weeksOnHand >= params.minWeeksOnHand);
+    if (params.minWeeksOnHand !== undefined) {
+      const minWeeks = params.minWeeksOnHand;
+      filtered = filtered.filter((s) => s.weeksOnHand >= minWeeks);
     }
 
-    if (params.maxSellThrough) {
-      filtered = filtered.filter((s) => s.sellThroughRate <= params.maxSellThrough);
+    if (params.maxSellThrough !== undefined) {
+      const maxSell = params.maxSellThrough;
+      filtered = filtered.filter((s) => s.sellThroughRate <= maxSell);
     }
 
     return filtered;
@@ -240,7 +242,8 @@ export class ClearanceService {
     // Filter to specific SKUs if provided
     let skusToOptimize = skus;
     if (dto.skuIds && dto.skuIds.length > 0) {
-      skusToOptimize = skus.filter((s) => dto.skuIds.includes(s.skuId));
+      const skuIds = dto.skuIds;
+      skusToOptimize = skus.filter((s) => skuIds.includes(s.skuId));
     }
 
     // Run optimization
@@ -274,7 +277,7 @@ export class ClearanceService {
         totalCurrentValue,
         projectedRecovery: totalRecovery,
         projectedMarginLoss: totalMarginLoss,
-        aiRecommendations: optimizationResults.slice(0, 10), // Store top 10 recommendations
+        aiRecommendations: JSON.parse(JSON.stringify(optimizationResults.slice(0, 10))), // Store top 10 recommendations
       },
     });
 
@@ -471,10 +474,10 @@ export class ClearanceService {
       marginErosionRisk = 'MEDIUM';
     }
 
-    const overallRisk =
+    const overallRisk: 'HIGH' | 'MEDIUM' | 'LOW' =
       marginErosionRisk === 'HIGH' || stockoutRisk === 'HIGH'
         ? 'HIGH'
-        : marginErosionRisk === 'MEDIUM' || stockoutRisk === 'MEDIUM'
+        : (marginErosionRisk as string) === 'MEDIUM' || (stockoutRisk as string) === 'MEDIUM'
         ? 'MEDIUM'
         : 'LOW';
 

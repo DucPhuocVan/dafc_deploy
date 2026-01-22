@@ -11,7 +11,7 @@ import {
   Request,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { ReplenishmentService } from './replenishment.service';
 import { CreateMOCTargetDto, CreateMOQRuleDto } from './dto/create-moc-target.dto';
 import { CreateReplenishmentOrderDto } from './dto/create-replenishment-order.dto';
@@ -156,7 +156,7 @@ export class ReplenishmentController {
 
   @Put('alerts/:id/acknowledge')
   @ApiOperation({ summary: 'Acknowledge an alert' })
-  async acknowledgeAlert(@Param('id') id: string, @Request() req) {
+  async acknowledgeAlert(@Param('id') id: string, @Request() req: { user: { id: string } }) {
     return this.replenishmentService.acknowledgeAlert(id, req.user.id);
   }
 
@@ -171,7 +171,7 @@ export class ReplenishmentController {
   @Post('orders')
   @ApiOperation({ summary: 'Create a replenishment order' })
   @ApiResponse({ status: 201, description: 'Order created' })
-  async createOrder(@Body() dto: CreateReplenishmentOrderDto, @Request() req) {
+  async createOrder(@Body() dto: CreateReplenishmentOrderDto, @Request() req: { user: { id: string } }) {
     return this.replenishmentService.createOrder(dto, req.user.id);
   }
 

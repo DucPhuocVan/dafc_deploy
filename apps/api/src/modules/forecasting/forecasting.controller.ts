@@ -10,7 +10,7 @@ import {
   Request,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { ForecastingService } from './forecasting.service';
 import { CreateForecastRunDto, CreateForecastConfigDto } from './dto/create-forecast.dto';
 
@@ -58,7 +58,7 @@ export class ForecastingController {
   @Post('run')
   @ApiOperation({ summary: 'Run a new forecast' })
   @ApiResponse({ status: 201, description: 'Forecast generated' })
-  async runForecast(@Body() dto: CreateForecastRunDto, @Request() req) {
+  async runForecast(@Body() dto: CreateForecastRunDto, @Request() req: { user: { id: string } }) {
     return this.forecastingService.runForecast(dto, req.user.id);
   }
 

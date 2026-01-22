@@ -13,9 +13,21 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:integration": "jest --config ./test/jest-e2e.json --testPathPattern=integration",
+    "test:security": "jest --testPathPattern=security",
     "test:stress": "ts-node test/stress/excel-import.stress.ts",
+    "test:stress:api": "ts-node test/stress/api-comprehensive-stress.ts",
+    "test:stress:api:quick": "ts-node test/stress/api-comprehensive-stress.ts quick standard",
+    "test:stress:api:spike": "ts-node test/stress/api-comprehensive-stress.ts standard spike",
+    "test:stress:api:breakpoint": "ts-node test/stress/api-comprehensive-stress.ts quick breakpoint",
+    "test:stress:db": "ts-node test/stress/database-stress.ts",
+    "test:stress:workflow": "ts-node test/stress/concurrent-workflow-stress.ts",
+    "test:stress:all": "ts-node test/stress/comprehensive-stress.ts comprehensive",
+    "test:stress:spike": "ts-node test/stress/comprehensive-stress.ts spike",
+    "test:stress:soak": "ts-node test/stress/comprehensive-stress.ts soak",
+    "test:stress:comprehensive": "npm run test:stress:api && npm run test:stress:db && npm run test:stress:workflow",
     "test:load": "ts-node test/stress/api-load.stress.ts",
-    "test:all": "npm run test && npm run test:stress"
+    "test:all": "npm run test && npm run test:security && npm run test:stress"
   },
   "dependencies": {
     "@dafc/database": "workspace:*",

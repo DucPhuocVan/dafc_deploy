@@ -99,9 +99,16 @@ jobs:
               local pkg_name="$1"
               local target_dir="../../deploy/node_modules/$pkg_name"
               
-              if [ -d "$target_dir" ]; then
-                echo "Package $pkg_name already exists"
+              # Check if target already exists as a real directory (not symlink)
+              if [ -d "$target_dir" ] && [ ! -L "$target_dir" ]; then
+                echo "Package $pkg_name already exists as directory"
                 return 0
+              fi
+              
+              # Remove if exists as symlink or file
+              if [ -L "$target_dir" ] || [ -f "$target_dir" ]; then
+                echo "Removing symlink/file: $target_dir"
+                rm -rf "$target_dir"
               fi
               
               # Find package in pnpm structure (format: package@version or @scope+package@version)

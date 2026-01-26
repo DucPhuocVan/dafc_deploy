@@ -78,7 +78,7 @@ jobs:
               cp -r .next/standalone/apps/web/.next ../../deploy/
             fi
             
-            # 3. Copy root node_modules (contains 'next' and other core modules)
+            # 3. Copy root node_modules (pnpm structure)
             if [ -d ".next/standalone/node_modules" ]; then
               echo "Copying root node_modules..."
               cp -r .next/standalone/node_modules ../../deploy/
@@ -90,43 +90,73 @@ jobs:
               cp -r .next/standalone/apps/web/node_modules/* ../../deploy/node_modules/ 2>/dev/null || true
             fi
             
-            # 5. Copy workspace packages if exist
+            # 5. CRITICAL: Extract packages from pnpm .pnpm folder
+            # pnpm standalone doesn't create symlinks, we need to manually create the package structure
+            echo "=== Extracting critical packages from pnpm structure ==="
+            
+            # Function to copy package from pnpm structure
+            copy_pnpm_package() {
+              local pkg_name="$1"
+              local target_dir="../../deploy/node_modules/$pkg_name"
+              
+              if [ -d "$target_dir" ]; then
+                echo "Package $pkg_name already exists"
+                return 0
+              fi
+              
+              # Find package in pnpm structure (format: package@version or @scope+package@version)
+              local search_pattern
+              if [[ "$pkg_name" == @* ]]; then
+                # Scoped package: @scope/package -> @scope+package
+                search_pattern=$(echo "$pkg_name" | sed 's|/|+|g')
+              else
+                search_pattern="$pkg_name@"
+              fi
+              
+              local pnpm_path=$(find ../../deploy/node_modules/.pnpm -maxdepth 1 -type d -name "${search_pattern}*" 2>/dev/null | head -1)
+              
+              if [ -n "$pnpm_path" ] && [ -d "$pnpm_path/node_modules/$pkg_name" ]; then
+                echo "Copying $pkg_name from pnpm: $pnpm_path"
+                mkdir -p "$(dirname "$target_dir")"
+                cp -r "$pnpm_path/node_modules/$pkg_name" "$target_dir"
+                return 0
+              fi
+              
+              echo "WARNING: Could not find $pkg_name in pnpm structure"
+              return 1
+            }
+            
+            # Copy critical packages
+            copy_pnpm_package "next"
+            copy_pnpm_package "@next/env"
+            copy_pnpm_package "next-intl"
+            copy_pnpm_package "react"
+            copy_pnpm_package "react-dom"
+            copy_pnpm_package "styled-jsx"
+            copy_pnpm_package "caniuse-lite"
+            copy_pnpm_package "postcss"
+            
+            # 6. Copy workspace packages if exist
             if [ -d ".next/standalone/packages" ]; then
               echo "Copying workspace packages..."
               mkdir -p ../../deploy/packages
               cp -r .next/standalone/packages/* ../../deploy/packages/
             fi
             
-            # 6. Copy static assets into .next folder
+            # 7. Copy static assets into .next folder
             if [ -d ".next/static" ]; then
               echo "Copying static assets..."
               cp -r .next/static ../../deploy/.next/
             fi
             
-            # 7. Verify next module exists and show server.js content
-            echo "=== Verifying next module ==="
-            ls -la ../../deploy/node_modules/next/ 2>/dev/null || echo "WARNING: next module not found!"
-            ls -la ../../deploy/node_modules/.pnpm/ 2>/dev/null | head -5 || echo "No .pnpm folder"
+            # 8. Verify critical modules
+            echo "=== Verifying critical modules ==="
+            ls -la ../../deploy/node_modules/next/ 2>/dev/null || echo "ERROR: next module not found!"
+            ls -la ../../deploy/node_modules/react/ 2>/dev/null || echo "ERROR: react module not found!"
             
-            # 8. Debug: Show first 25 lines of server.js to identify missing module
-            echo "=== server.js first 25 lines ==="
-            head -25 ../../deploy/server.js 2>/dev/null || echo "No server.js found"
-            
-            # 9. Copy next-intl if missing (common issue with monorepos)
-            if [ ! -d "../../deploy/node_modules/next-intl" ]; then
-              echo "Copying next-intl from standalone..."
-              cp -r .next/standalone/node_modules/next-intl ../../deploy/node_modules/ 2>/dev/null || true
-            fi
-            
-            # 10. Copy any missing node_modules from root standalone
-            echo "=== Checking for missing modules ==="
-            for dir in .next/standalone/node_modules/*/; do
-              modname=$(basename "$dir")
-              if [ ! -d "../../deploy/node_modules/$modname" ]; then
-                echo "Copying missing module: $modname"
-                cp -r "$dir" "../../deploy/node_modules/" 2>/dev/null || true
-              fi
-            done
+            # 9. Debug: Show first 20 lines of server.js
+            echo "=== server.js first 20 lines ==="
+            head -20 ../../deploy/server.js 2>/dev/null || echo "No server.js found"
             
           else
             echo "=== Standard standalone structure detected ==="

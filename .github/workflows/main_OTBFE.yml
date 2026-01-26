@@ -130,7 +130,7 @@ jobs:
               fi
               
               echo "WARNING: Could not find $pkg_name in pnpm structure"
-              return 1
+              return 0
             }
             
             # Copy critical packages

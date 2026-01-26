@@ -84,9 +84,34 @@ jobs:
             mkdir -p deploy/node_modules/@dafc/database
             cp -r packages/database/dist deploy/node_modules/@dafc/database/ 2>/dev/null || true
             cp packages/database/package.json deploy/node_modules/@dafc/database/
-            # Copy Prisma generated client
+            # Copy Prisma schema for client generation
+            mkdir -p deploy/prisma
+            cp packages/database/prisma/schema.prisma deploy/prisma/ 2>/dev/null || true
+            
+            # Copy Prisma generated client from pnpm structure
+            echo "=== Copying Prisma client ==="
+            if [ -d "node_modules/.pnpm" ]; then
+              # Find and copy .prisma client from pnpm structure
+              PRISMA_CLIENT_PATH=$(find node_modules/.pnpm -type d -name ".prisma" -path "*/node_modules/.prisma" 2>/dev/null | head -1)
+              if [ -n "$PRISMA_CLIENT_PATH" ]; then
+                echo "Found Prisma client at: $PRISMA_CLIENT_PATH"
+                cp -r "$PRISMA_CLIENT_PATH" deploy/node_modules/
+              fi
+              # Find and copy @prisma from pnpm structure
+              PRISMA_PATH=$(find node_modules/.pnpm -type d -name "@prisma" -path "*/node_modules/@prisma" 2>/dev/null | head -1)
+              if [ -n "$PRISMA_PATH" ]; then
+                echo "Found @prisma at: $PRISMA_PATH"
+                cp -r "$PRISMA_PATH" deploy/node_modules/
+              fi
+            fi
+            # Also try direct copy as fallback
             cp -r node_modules/.prisma deploy/node_modules/ 2>/dev/null || true
             cp -r node_modules/@prisma deploy/node_modules/ 2>/dev/null || true
+            
+            # Verify Prisma client exists
+            echo "=== Verifying Prisma client ==="
+            ls -la deploy/node_modules/.prisma/client/ 2>/dev/null || echo "WARNING: .prisma/client not found!"
+            ls -la deploy/node_modules/@prisma/client/ 2>/dev/null || echo "WARNING: @prisma/client not found!"
           fi
           
           # Copy shared package

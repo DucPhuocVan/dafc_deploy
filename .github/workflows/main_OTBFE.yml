@@ -103,10 +103,30 @@ jobs:
               cp -r .next/static ../../deploy/.next/
             fi
             
-            # 7. Verify next module exists
+            # 7. Verify next module exists and show server.js content
             echo "=== Verifying next module ==="
             ls -la ../../deploy/node_modules/next/ 2>/dev/null || echo "WARNING: next module not found!"
             ls -la ../../deploy/node_modules/.pnpm/ 2>/dev/null | head -5 || echo "No .pnpm folder"
+            
+            # 8. Debug: Show first 25 lines of server.js to identify missing module
+            echo "=== server.js first 25 lines ==="
+            head -25 ../../deploy/server.js 2>/dev/null || echo "No server.js found"
+            
+            # 9. Copy next-intl if missing (common issue with monorepos)
+            if [ ! -d "../../deploy/node_modules/next-intl" ]; then
+              echo "Copying next-intl from standalone..."
+              cp -r .next/standalone/node_modules/next-intl ../../deploy/node_modules/ 2>/dev/null || true
+            fi
+            
+            # 10. Copy any missing node_modules from root standalone
+            echo "=== Checking for missing modules ==="
+            for dir in .next/standalone/node_modules/*/; do
+              modname=$(basename "$dir")
+              if [ ! -d "../../deploy/node_modules/$modname" ]; then
+                echo "Copying missing module: $modname"
+                cp -r "$dir" "../../deploy/node_modules/" 2>/dev/null || true
+              fi
+            done
             
           else
             echo "=== Standard standalone structure detected ==="

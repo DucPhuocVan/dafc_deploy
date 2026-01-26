@@ -72,37 +72,24 @@ jobs:
           
           cd ../../deploy
           
-          echo "=== Installing production dependencies with npm ==="
-          # Create package.json with required dependencies
-          cat > package.json << 'EOF'
-          {
-            "name": "otbfe-deploy",
-            "version": "1.0.0",
-            "private": true,
-            "scripts": {
-              "start": "node server.js"
-            },
-            "dependencies": {
-              "next": "14.2.35",
-              "react": "18.3.1",
-              "react-dom": "18.3.1",
-              "next-intl": "^4.7.0",
-              "next-auth": "^5.0.0-beta.30",
-              "@auth/prisma-adapter": "^2.10.0",
-              "@prisma/client": "^5.22.0",
-              "sharp": "^0.33.5"
-            }
-          }
-          EOF
+          echo "=== Setting up package.json ==="
+          # Copy package.json from web app and modify for production
+          cp ../apps/web/package.json .
           
-          # Install dependencies with npm (not pnpm - avoids symlink issues)
+          # Remove workspace dependencies and add sharp
+          cat package.json | \
+            sed 's/"@dafc\/shared": "workspace:\*",//' | \
+            sed '/"dependencies": {/a\    "sharp": "^0.33.5",' > package.json.tmp
+          mv package.json.tmp package.json
+          
+          echo "=== Installing production dependencies with npm ==="
           npm install --omit=dev --legacy-peer-deps
           
-          # Copy prisma schema and generate client
+          # Generate Prisma Client
           echo "=== Generating Prisma Client ==="
           mkdir -p prisma
           cp ../packages/database/prisma/schema.prisma prisma/
-          npx prisma generate
+          npx prisma@5.22.0 generate
           
           echo "=== Verifying installation ==="
           ls -la node_modules/next/ || echo "ERROR: next not installed!"

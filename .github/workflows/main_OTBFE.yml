@@ -78,21 +78,35 @@ jobs:
               cp -r .next/standalone/apps/web/.next ../../deploy/
             fi
             
-            # 3. Copy root node_modules
+            # 3. Copy root node_modules (contains 'next' and other core modules)
             if [ -d ".next/standalone/node_modules" ]; then
+              echo "Copying root node_modules..."
               cp -r .next/standalone/node_modules ../../deploy/
             fi
             
-            # 4. Copy workspace packages if exist
+            # 4. Merge web app's node_modules if exists (for workspace dependencies)
+            if [ -d ".next/standalone/apps/web/node_modules" ]; then
+              echo "Merging web app node_modules..."
+              cp -r .next/standalone/apps/web/node_modules/* ../../deploy/node_modules/ 2>/dev/null || true
+            fi
+            
+            # 5. Copy workspace packages if exist
             if [ -d ".next/standalone/packages" ]; then
+              echo "Copying workspace packages..."
               mkdir -p ../../deploy/packages
               cp -r .next/standalone/packages/* ../../deploy/packages/
             fi
             
-            # 5. Copy static assets into .next folder
+            # 6. Copy static assets into .next folder
             if [ -d ".next/static" ]; then
+              echo "Copying static assets..."
               cp -r .next/static ../../deploy/.next/
             fi
+            
+            # 7. Verify next module exists
+            echo "=== Verifying next module ==="
+            ls -la ../../deploy/node_modules/next/ 2>/dev/null || echo "WARNING: next module not found!"
+            ls -la ../../deploy/node_modules/.pnpm/ 2>/dev/null | head -5 || echo "No .pnpm folder"
             
           else
             echo "=== Standard standalone structure detected ==="

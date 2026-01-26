@@ -88,7 +88,9 @@ jobs:
               "react-dom": "18.3.1",
               "next-intl": "^4.7.0",
               "next-auth": "^5.0.0-beta.30",
-              "@auth/prisma-adapter": "^2.10.0"
+              "@auth/prisma-adapter": "^2.10.0",
+              "@prisma/client": "^5.22.0",
+              "sharp": "^0.33.5"
             }
           }
           EOF
@@ -96,9 +98,15 @@ jobs:
           # Install dependencies with npm (not pnpm - avoids symlink issues)
           npm install --omit=dev --legacy-peer-deps
           
+          # Copy prisma schema and generate client
+          echo "=== Generating Prisma Client ==="
+          mkdir -p prisma
+          cp ../packages/database/prisma/schema.prisma prisma/
+          npx prisma generate
+          
           echo "=== Verifying installation ==="
           ls -la node_modules/next/ || echo "ERROR: next not installed!"
-          ls -la node_modules/react/ || echo "ERROR: react not installed!"
+          ls -la node_modules/@prisma/client/ || echo "ERROR: prisma client not installed!"
           
           echo "=== Final structure ==="
           ls -la .

@@ -120,19 +120,21 @@ export default function OTBPlanDetailPage({
 
         if (planData.success) {
           setPlan(planData.data);
+          // Transform backend schema to frontend format
           setLineItems(
-            planData.data.lineItems.map((item: LineItem) => ({
+            planData.data.lineItems.map((item: any) => ({
               id: item.id,
               categoryId: item.categoryId,
               gender: item.gender,
-              plannedUnits: item.plannedUnits,
-              plannedAmount: Number(item.plannedAmount),
-              averageRetailPrice: Number(item.averageRetailPrice),
-              averageCostPrice: Number(item.averageCostPrice),
-              marginPercent: Number(item.marginPercent),
-              sellThruTarget: Number(item.sellThruTarget),
-              weeksOfSupply: item.weeksOfSupply,
-              comments: item.comments,
+              plannedUnits: item.userUnits || 0,
+              plannedAmount: Number(item.userBuyValue) || 0,
+              // Use default values for fields not in database
+              averageRetailPrice: 100, // Placeholder - could be calculated from historical data
+              averageCostPrice: 60, // Placeholder
+              marginPercent: 40, // Placeholder
+              sellThruTarget: 85, // Placeholder
+              weeksOfSupply: 12, // Placeholder
+              comments: item.comment || '',
             }))
           );
         } else {
@@ -162,10 +164,28 @@ export default function OTBPlanDetailPage({
   const handleSave = async () => {
     setIsSaving(true);
     try {
+      // Transform lineItems to match backend schema
+      const transformedLineItems = lineItems.map((item) => {
+        const totalBudget = Number(plan?.budget.totalBudget) || 0;
+        const buyValue = Number(item.plannedAmount) || 0;
+        const buyPct = totalBudget > 0 ? (buyValue / totalBudget) * 100 : 0;
+
+        return {
+          id: item.id,
+          categoryId: item.categoryId,
+          gender: item.gender,
+          level: 1, // Default level
+          userUnits: Number(item.plannedUnits) || 0,
+          userBuyValue: buyValue,
+          userBuyPct: buyPct,
+          comment: item.comments || '',
+        };
+      });
+
       const response = await fetch(`/api/v1/otb-plans/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ lineItems }),
+        body: JSON.stringify({ lineItems: transformedLineItems }),
       });
 
       const result = await response.json();
@@ -282,7 +302,7 @@ export default function OTBPlanDetailPage({
 
       if (result.success) {
         // Transform AI proposal to line items
-        const aiLineItems: LineItem[] = result.data.proposal.map(
+        const aiLineItems: LineItem[] = result.data.proposals.map(
           (item: {
             categoryName: string;
             gender: string;
@@ -315,7 +335,8 @@ export default function OTBPlanDetailPage({
         setHasChanges(true);
         toast.success('AI proposal generated! Review and save the changes.');
       } else {
-        toast.error(result.error || 'Failed to generate AI proposal');
+        const errorMsg = result.detail || result.error || 'Failed to generate AI proposal';
+        toast.error(errorMsg);
       }
     } catch (error) {
       console.error('AI generation error:', error);

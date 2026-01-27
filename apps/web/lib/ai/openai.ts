@@ -89,11 +89,11 @@ export async function generateOTBProposal(context: {
     const response = await openai.chat.completions.create({
       model: MODELS.STANDARD,
       max_tokens: 4096,
-      response_format: { type: 'json_object' },
+      // Removed response_format for Azure OpenAI compatibility
       messages: [
         {
           role: 'system',
-          content: PROMPTS.SYSTEM_PROPOSAL,
+          content: PROMPTS.SYSTEM_PROPOSAL + '\n\nIMPORTANT: You MUST respond with valid JSON only, no markdown formatting.',
         },
         {
           role: 'user',
@@ -133,7 +133,13 @@ Return response as JSON with this structure:
       throw new Error('No content in response');
     }
 
-    const result = JSON.parse(content) as AIProposalResponse;
+    // Clean response - remove markdown code blocks if present
+    const cleanedContent = content
+      .replace(/```json\n?/g, '')
+      .replace(/```\n?/g, '')
+      .trim();
+
+    const result = JSON.parse(cleanedContent) as AIProposalResponse;
     return result;
   } catch (error) {
     console.error('Error generating OTB proposal:', error);

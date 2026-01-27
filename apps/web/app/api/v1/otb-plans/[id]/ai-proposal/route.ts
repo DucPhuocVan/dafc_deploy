@@ -108,18 +108,54 @@ export async function POST(
       latencyMs: responseTime,
     });
 
+    // Transform AI proposal to LineItem format expected by frontend
+    const totalBudget = Number(plan.budget.totalBudget);
+    const transformedProposals = proposal.proposals.map((p: any) => {
+      // Find category by name
+      const category = categories.find(
+        (c) => c.name.toLowerCase() === p.category.toLowerCase()
+      ) || categories[0];
+
+      // Calculate planned amount from percentage
+      const plannedAmount = (totalBudget * p.proposedPercentage) / 100;
+
+      // Estimate pricing based on category (these are placeholder values)
+      // In production, you would use historical data or more sophisticated calculations
+      const averageRetailPrice = 100; // Placeholder
+      const averageCostPrice = 60; // Placeholder (60% of retail)
+      const marginPercent = ((averageRetailPrice - averageCostPrice) / averageRetailPrice) * 100;
+      const plannedUnits = Math.round(plannedAmount / averageCostPrice);
+
+      return {
+        categoryName: category?.name || p.category,
+        gender: 'UNISEX' as const,
+        plannedUnits,
+        plannedAmount,
+        averageRetailPrice,
+        averageCostPrice,
+        marginPercent,
+        sellThruTarget: 85, // Default target
+        weeksOfSupply: 12, // Default
+      };
+    });
+
     return NextResponse.json({
       success: true,
       data: {
-        proposals: proposal.proposals,
+        proposals: transformedProposals,
         overallConfidence: proposal.overallConfidence,
         executiveSummary: proposal.executiveSummary,
+        rawProposal: proposal.proposals, // Include raw AI response for reference
       },
     });
   } catch (error) {
     console.error('Error generating AI proposal:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to generate AI proposal' },
+      {
+        success: false,
+        error: 'Failed to generate AI proposal',
+        detail: error instanceof Error ? error.message : String(error)
+      },
       { status: 500 }
     );
   }

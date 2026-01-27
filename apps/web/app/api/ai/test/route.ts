@@ -1,9 +1,9 @@
 // app/api/ai/test/route.ts
 // AI Configuration Test Endpoint
-// This endpoint tests OpenAI API connectivity without requiring authentication
+// This endpoint tests Azure AI Foundry API connectivity without requiring authentication
 
 import { NextRequest, NextResponse } from 'next/server';
-import OpenAI from 'openai';
+import { AzureOpenAI } from 'openai';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -43,17 +43,20 @@ export async function GET(_request: NextRequest) {
   };
 
   try {
-    // Check 1: Environment variable exists
-    const apiKey = process.env.OPENAI_API_KEY;
+    // Check 1: Environment variables exist
+    const apiKey = process.env.AZURE_OPENAI_API_KEY;
+    const endpoint = process.env.AZURE_OPENAI_ENDPOINT;
+    const deployment = process.env.AZURE_OPENAI_DEPLOYMENT;
 
-    if (!apiKey) {
+    if (!apiKey || !endpoint) {
       result.status = 'no_key';
       result.hasKey = false;
-      result.error = 'OPENAI_API_KEY environment variable is not set';
+      result.error = 'Azure OpenAI configuration is not set';
       result.recommendations = [
-        'Go to Render Dashboard → Environment',
-        'Add OPENAI_API_KEY with your OpenAI API key',
-        'The key should start with sk-proj- or sk-',
+        'Go to Environment settings',
+        'Add AZURE_OPENAI_API_KEY with your Azure API key',
+        'Add AZURE_OPENAI_ENDPOINT with your Azure endpoint',
+        'Add AZURE_OPENAI_DEPLOYMENT with your deployment name',
         'Save and wait for automatic redeploy',
       ];
       return NextResponse.json(result, { status: 200 });
@@ -65,25 +68,17 @@ export async function GET(_request: NextRequest) {
     // Check 2: Key format
     const keyPrefix = apiKey.substring(0, 10) + '...';
     result.keyPrefix = keyPrefix;
-
-    if (apiKey.startsWith('sk-proj-')) {
-      result.checks.keyFormat = true;
-    } else if (apiKey.startsWith('sk-')) {
-      result.checks.keyFormat = true;
-      result.recommendations?.push('Consider upgrading to a project-based API key (sk-proj-*)');
-    } else {
-      result.error = 'Invalid API key format. Key should start with sk- or sk-proj-';
-      result.recommendations = ['Verify your API key from https://platform.openai.com/api-keys'];
-      return NextResponse.json(result, { status: 200 });
-    }
+    result.checks.keyFormat = true;
 
     // Check 3: API Connection
-    const openai = new OpenAI({
+    const openai = new AzureOpenAI({
       apiKey: apiKey,
+      endpoint: endpoint,
+      apiVersion: process.env.AZURE_OPENAI_API_VERSION || '2024-05-01-preview',
     });
 
     // Check 4: Model Access - Make a simple completion request
-    const model = 'gpt-4o-mini'; // Use a lightweight model for testing
+    const model = deployment || 'gpt-4o';
     result.model = model;
 
     const completion = await openai.chat.completions.create({
@@ -118,52 +113,60 @@ export async function GET(_request: NextRequest) {
   } catch (error: unknown) {
     result.latencyMs = Date.now() - startTime;
 
-    if (error instanceof OpenAI.APIError) {
-      result.errorType = error.type || 'api_error';
+    if (error instanceof Error && 'status' in error) {
+      const apiError = error as Error & { status?: number; type?: string };
+      result.errorType = apiError.type || 'api_error';
       result.error = error.message;
 
-      switch (error.status) {
+      switch (apiError.status) {
         case 401:
           result.error = 'Invalid API key - authentication failed';
           result.recommendations = [
-            'Verify your API key is correct',
-            'Generate a new key at https://platform.openai.com/api-keys',
-            'Make sure the key has not been revoked',
+            'Verify your Azure API key is correct',
+            'Check the key in Azure Portal under your Cognitive Services resource',
+            'Make sure the key has not been regenerated',
           ];
           break;
         case 403:
           result.error = 'Access forbidden - check API key permissions';
           result.recommendations = [
             'Verify your API key has the required permissions',
-            'Check if your OpenAI account is in good standing',
+            'Check if your Azure subscription is active',
+          ];
+          break;
+        case 404:
+          result.error = 'Deployment not found';
+          result.recommendations = [
+            'Verify the AZURE_OPENAI_DEPLOYMENT name is correct',
+            'Check if the model is deployed in Azure AI Foundry',
           ];
           break;
         case 429:
           result.error = 'Rate limit exceeded or quota exhausted';
           result.recommendations = [
-            'Check your OpenAI usage at https://platform.openai.com/usage',
-            'Verify billing is set up correctly',
+            'Check your Azure usage and quotas',
             'Wait a moment and try again',
           ];
           break;
         case 500:
         case 502:
         case 503:
-          result.error = 'OpenAI service temporarily unavailable';
-          result.checks.apiConnection = true; // We reached OpenAI
+          result.error = 'Azure AI service temporarily unavailable';
+          result.checks.apiConnection = true;
           result.recommendations = ['Try again in a few minutes'];
           break;
         default:
           result.recommendations = [
-            'Check OpenAI status at https://status.openai.com',
+            'Check Azure AI Foundry status',
             'Review the error message for more details',
           ];
       }
-    } else if (error instanceof Error && 'code' in error && (error.code === 'ECONNREFUSED' || error.code === 'ENOTFOUND')) {
-      result.error = 'Network error - cannot reach OpenAI API';
+    } else if (error instanceof Error && 'code' in error && ((error as NodeJS.ErrnoException).code === 'ECONNREFUSED' || (error as NodeJS.ErrnoException).code === 'ENOTFOUND')) {
+      result.error = 'Network error - cannot reach Azure AI API';
       result.errorType = 'network_error';
       result.recommendations = [
         'Check network connectivity',
+        'Verify the AZURE_OPENAI_ENDPOINT is correct',
         'Verify firewall settings allow outbound HTTPS',
       ];
     } else {
@@ -181,20 +184,28 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const testMessage = body.message || 'Hello, can you confirm you are working?';
 
-    const apiKey = process.env.OPENAI_API_KEY;
-    if (!apiKey) {
+    const apiKey = process.env.AZURE_OPENAI_API_KEY;
+    const endpoint = process.env.AZURE_OPENAI_ENDPOINT;
+    const deployment = process.env.AZURE_OPENAI_DEPLOYMENT || 'gpt-4o';
+
+    if (!apiKey || !endpoint) {
       return NextResponse.json({
         status: 'error',
-        error: 'OPENAI_API_KEY not configured',
+        error: 'Azure OpenAI configuration not set',
         hasKey: false,
       }, { status: 200 });
     }
 
-    const openai = new OpenAI({ apiKey });
+    const openai = new AzureOpenAI({
+      apiKey,
+      endpoint,
+      apiVersion: process.env.AZURE_OPENAI_API_VERSION || '2024-05-01-preview',
+    });
+
     const startTime = Date.now();
 
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
+      model: deployment,
       messages: [
         {
           role: 'system',
@@ -223,7 +234,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       status: 'error',
       error: error instanceof Error ? error.message : 'Unknown error',
-      hasKey: !!process.env.OPENAI_API_KEY,
+      hasKey: !!process.env.AZURE_OPENAI_API_KEY,
     }, { status: 200 });
   }
 }

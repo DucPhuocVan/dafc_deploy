@@ -1,12 +1,16 @@
-import { createOpenAI } from '@ai-sdk/openai';
+import { createAzure } from '@ai-sdk/azure';
 
-// OpenAI client configuration
-export const openai = createOpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+// Azure AI Foundry client configuration
+export const azure = createAzure({
+  apiKey: process.env.AZURE_OPENAI_API_KEY,
+  resourceName: 'projecttest01-resource',
 });
 
-// Default model
-export const DEFAULT_MODEL = 'gpt-4o-mini';
+// Default model (Azure deployment name)
+export const DEFAULT_MODEL = 'gpt-4o';
+
+// Export azure as openai for backward compatibility
+export const openai = azure;
 
 // AI Settings
 export const AI_CONFIG = {

@@ -1,16 +1,18 @@
-import OpenAI from 'openai';
+import { AzureOpenAI } from 'openai';
 import { PROMPTS } from './prompts';
 
-// Initialize OpenAI client
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || '',
+// Initialize Azure OpenAI client
+const openai = new AzureOpenAI({
+  apiKey: process.env.AZURE_OPENAI_API_KEY || '',
+  endpoint: process.env.AZURE_OPENAI_ENDPOINT || '',
+  apiVersion: process.env.AZURE_OPENAI_API_VERSION || '2024-05-01-preview',
 });
 
-// Model selection based on task complexity
+// Model selection based on task complexity (Azure deployment names)
 export const MODELS = {
-  FAST: 'gpt-4o-mini',           // Quick validations, classifications
-  STANDARD: 'gpt-4o',            // Analysis, chat, comments
-  ADVANCED: 'gpt-4o',            // Complex reasoning, summaries
+  FAST: process.env.AZURE_OPENAI_DEPLOYMENT || 'gpt-4o',           // Quick validations, classifications
+  STANDARD: process.env.AZURE_OPENAI_DEPLOYMENT || 'gpt-4o',       // Analysis, chat, comments
+  ADVANCED: process.env.AZURE_OPENAI_DEPLOYMENT || 'gpt-4o',       // Complex reasoning, summaries
 } as const;
 
 export type ModelType = keyof typeof MODELS;

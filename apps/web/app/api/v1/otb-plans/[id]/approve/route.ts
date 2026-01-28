@@ -86,6 +86,9 @@ export async function POST(
         approvedBy: {
           select: { id: true, name: true, email: true },
         },
+        rejectedBy: {
+          select: { id: true, name: true, email: true },
+        },
         lineItems: {
           include: {
             category: true,

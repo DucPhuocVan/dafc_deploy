@@ -363,7 +363,13 @@ async function updateEntityStatus(
     case 'otb':
       await prisma.oTBPlan.update({
         where: { id: workflow.referenceId },
-        data: { status, ...(result === 'approved' ? { approvedAt: new Date() } : {}) },
+        data: {
+          status,
+          ...(result === 'approved'
+            ? { approvedAt: new Date() }
+            : { rejectedAt: new Date() }
+          )
+        },
       });
       break;
     case 'sku':

@@ -5,8 +5,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 // ============================================
@@ -160,6 +161,7 @@ model User {
   // OTB relations
   createdOTBPlans  OTBPlan[] @relation("OTBCreatedBy")
   approvedOTBPlans OTBPlan[] @relation("OTBApprovedBy")
+  rejectedOTBPlans OTBPlan[] @relation("OTBRejectedBy")
 
   // SKU relations
   createdSKUProposals  SKUProposal[] @relation("SKUCreatedBy")
@@ -556,10 +558,14 @@ model OTBPlan {
   createdBy    User      @relation("OTBCreatedBy", fields: [createdById], references: [id])
   createdAt    DateTime  @default(now())
   submittedAt  DateTime?
-  approvedById String?
-  approvedBy   User?     @relation("OTBApprovedBy", fields: [approvedById], references: [id])
-  approvedAt   DateTime?
-  updatedAt    DateTime  @updatedAt
+  approvedById    String?
+  approvedBy      User?     @relation("OTBApprovedBy", fields: [approvedById], references: [id])
+  approvedAt      DateTime?
+  rejectedById    String?
+  rejectedBy      User?     @relation("OTBRejectedBy", fields: [rejectedById], references: [id])
+  rejectedAt      DateTime?
+  rejectionReason String?
+  updatedAt       DateTime  @updatedAt
 
   // Line items
   lineItems      OTBLineItem[]

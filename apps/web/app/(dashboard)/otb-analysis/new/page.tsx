@@ -35,7 +35,7 @@ export default function NewOTBPlanPage() {
 
   const [selectedBudgetId, setSelectedBudgetId] = useState<string>('');
   const [planName, setPlanName] = useState('');
-  const [versionType, setVersionType] = useState<'INITIAL' | 'REVISED' | 'FINAL'>('INITIAL');
+  const [versionType, setVersionType] = useState<'V0_SYSTEM' | 'REVISED' | 'VF_FINAL'>('V0_SYSTEM');
 
   useEffect(() => {
     async function fetchBudgets() {
@@ -175,9 +175,9 @@ export default function NewOTBPlanPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="INITIAL">{t('initial')}</SelectItem>
+                    <SelectItem value="V0_SYSTEM">{t('initial')}</SelectItem>
                     <SelectItem value="REVISED">{t('revised')}</SelectItem>
-                    <SelectItem value="FINAL">{t('final')}</SelectItem>
+                    <SelectItem value="VF_FINAL">{t('final')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

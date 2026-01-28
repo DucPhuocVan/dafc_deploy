@@ -62,12 +62,14 @@ export async function POST(
       comment: reason,
     });
 
-    // Update plan status (store rejection reason in comments)
+    // Update plan status
     const plan = await prisma.oTBPlan.update({
       where: { id },
       data: {
         status: 'REJECTED',
-        comments: `Rejected: ${reason}`,
+        rejectedById: session.user.id,
+        rejectedAt: new Date(),
+        rejectionReason: reason,
       },
       include: {
         budget: {
@@ -78,6 +80,9 @@ export async function POST(
           },
         },
         createdBy: {
+          select: { id: true, name: true, email: true },
+        },
+        rejectedBy: {
           select: { id: true, name: true, email: true },
         },
         lineItems: {

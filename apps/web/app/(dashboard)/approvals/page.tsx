@@ -181,12 +181,20 @@ export default function ApprovalsPage() {
   };
 
   const getEntityUrl = (workflow: ApprovalWorkflow): string => {
-    switch (workflow.entityType) {
+    // Normalize entity type to uppercase for comparison
+    const normalizedType = workflow.entityType?.toUpperCase();
+
+    switch (normalizedType) {
       case 'BUDGET':
+      case 'BUDGET_APPROVAL':
         return `/budget/${workflow.entityId}`;
+      case 'OTB':
       case 'OTB_PLAN':
+      case 'OTB_APPROVAL':
         return `/otb-analysis/${workflow.entityId}`;
+      case 'SKU':
       case 'SKU_PROPOSAL':
+      case 'SKU_APPROVAL':
         return `/sku-proposal/${workflow.entityId}`;
       default:
         return '#';
@@ -197,12 +205,12 @@ export default function ApprovalsPage() {
     activeTab === 'all' || activeTab === 'completed'
       ? workflows
       : workflows.filter((w) =>
-          activeTab === 'budget'
-            ? w.type === 'BUDGET_APPROVAL'
-            : activeTab === 'otb'
-              ? w.type === 'OTB_APPROVAL'
-              : w.type === 'SKU_APPROVAL'
-        );
+        activeTab === 'budget'
+          ? w.type === 'BUDGET_APPROVAL'
+          : activeTab === 'otb'
+            ? w.type === 'OTB_APPROVAL'
+            : w.type === 'SKU_APPROVAL'
+      );
 
   return (
     <div className="space-y-6">
@@ -278,50 +286,61 @@ export default function ApprovalsPage() {
               <CheckCircle className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <p>{t('noPending')}</p>
               <p className="text-sm mt-1">{t('allCaughtUp')}</p>
+
             </div>
           ) : (
             <div className="space-y-4">
               {filteredWorkflows.map((workflow) => (
-                <Card
+                <div
                   key={workflow.id}
-                  className="hover:shadow-md transition-shadow cursor-pointer"
+                  role="button"
+                  tabIndex={0}
+                  className="cursor-pointer"
                   onClick={() => router.push(getEntityUrl(workflow))}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      router.push(getEntityUrl(workflow));
+                    }
+                  }}
                 >
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <div className="p-2 rounded-lg bg-muted">
-                          {getTypeIcon(workflow.type)}
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <h3 className="font-medium">{getEntityName(workflow)}</h3>
-                            {getTypeBadge(workflow.type)}
-                            {getStatusBadge(workflow.status)}
+                  <Card className="hover:shadow-md transition-shadow">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <div className="p-2 rounded-lg bg-muted">
+                            {getTypeIcon(workflow.type)}
                           </div>
-                          <div className="flex items-center gap-4 mt-1 text-sm text-muted-foreground">
-                            <span className="flex items-center gap-1">
-                              <User className="h-3 w-3" />
-                              {workflow.initiatedBy.name}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <Calendar className="h-3 w-3" />
-                              {new Date(workflow.createdAt).toLocaleDateString(locale === 'vi' ? 'vi-VN' : 'en-US')}
-                            </span>
-                            {workflow.currentStepDetails && (
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-medium">{getEntityName(workflow)}</h3>
+                              {getTypeBadge(workflow.type)}
+                              {getStatusBadge(workflow.status)}
+                            </div>
+                            <div className="flex items-center gap-4 mt-1 text-sm text-muted-foreground">
                               <span className="flex items-center gap-1">
-                                <Clock className="h-3 w-3" />
-                                {t('step')} {workflow.currentStep}/{workflow.totalSteps}:{' '}
-                                {workflow.currentStepDetails.name}
+                                <User className="h-3 w-3" />
+                                {workflow.initiatedBy.name}
                               </span>
-                            )}
+                              <span className="flex items-center gap-1">
+                                <Calendar className="h-3 w-3" />
+                                {new Date(workflow.createdAt).toLocaleDateString(locale === 'vi' ? 'vi-VN' : 'en-US')}
+                              </span>
+                              {workflow.currentStepDetails && (
+                                <span className="flex items-center gap-1">
+                                  <Clock className="h-3 w-3" />
+                                  {t('step')} {workflow.currentStep}/{workflow.totalSteps}:{' '}
+                                  {workflow.currentStepDetails.name}
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
+                        <ChevronRight className="h-5 w-5 text-muted-foreground" />
                       </div>
-                      <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                </div>
               ))}
             </div>
           )}
